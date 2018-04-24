@@ -1,8 +1,4 @@
-var can = require('socketcan')
-
-var channel = can.createRawChannel('can0', true);
-channel.start();
-
+// CanTranslateMotor.js
 const cmd2adr = {
   'set_duty':             '00',
   'set_current':          '01',
@@ -27,7 +23,7 @@ const scaling = {
   'set_pos':1000000
 }
 
-function prepMotorMsg(id, cmd, value) {
+export function prepMotorMsg(id, cmd, value) {
   var addr = parseInt((cmd2adr[cmd]).concat(id), 16);
   var data = (value*scaling[cmd]).toString(16);
   for (var i = data.length; i < 8; i++) {data = '0'.concat(data)};
@@ -39,9 +35,3 @@ function prepMotorMsg(id, cmd, value) {
   };
   return msg
 };
-
-function sendMsg(id, cmd, value) {
-  const msg = prepMotorMsg(id, cmd, value);
-  console.log(msg);
-  return channel.send(msg);
-}

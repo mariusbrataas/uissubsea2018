@@ -1,6 +1,6 @@
-// Transfer functions
-tangentTransfer = (x,z) => {return Math.pow(Math.abs(x),z)*Math.tan((Math.PI/4)*x)};
-tangentTransfers = (X,z) => {return X.map((x) => {return Math.pow(Math.abs(x),z)*Math.tan((Math.PI/4)*x)})};
+// Importing local functions
+import {tangentTransfers, sTransfers} from './Transferfunctions.js'
+import prepMotorMsg from './CanTranslateMotor.js'
 
 // Library
 const translateXbox = {
@@ -48,8 +48,8 @@ function chooseXboxDesignation(e, data, sock, inptype) {
       }
       break;
     case 'axis':
-      const axes = tangentTransfers(e.detail.gamepad.axes);
-      const thrusts = tangentTransfers([e.detail.buttons[6],e.detail.buttons[7]]);
+      const axes = sTransfers(e.detail.gamepad.axes, 1);
+      const thrusts = sTransfers([e.detail.gamepad.buttons[6].value,e.detail.gamepad.buttons[7].value], 1);
       switch(designation) {
         case 'Thrusters':
           translateXboxAxisThrusters(e, data, sock, axes, thrusts)
@@ -68,7 +68,8 @@ function chooseXboxDesignation(e, data, sock, inptype) {
 }
 
 function translateXboxAxisThrusters(e, data, sock, axes, thrusts) {
-
+  sock.emit('pushCan', ['set_duty', thrusts[1]])
+  console.log(thrusts[1])
 }
 function translateXboxAxisManipulator(e, data, sock, axes, thrusts) {
 
@@ -90,12 +91,10 @@ function translateXboxButtonThrusters(e, data, sock) {
       case 'y':
         break;
       case 'lb':
-      sock.emit('pushCan', ['set_current', -7000])
-      //sock.emit('pushCan', ['set_rpm', -50000])
+        sock.emit('pushCan', ['set_duty', 0.1])
         break;
       case 'rb':
-        sock.emit('pushCan', ['set_current', 7000])
-        //sock.emit('pushCan', ['set_rpm', 50000])
+        sock.emit('pushCan', ['set_duty', 1])
         break;
       case 'select':
         break;
@@ -117,8 +116,8 @@ function translateXboxButtonThrusters(e, data, sock) {
     }
   }
   else {
-    if (translateXbox.button[e.detail.index] == 'rb') {sock.emit('pushCan', ['set_rpm', 0])}
-    if (translateXbox.button[e.detail.index] == 'lb') {sock.emit('pushCan', ['set_rpm', 0])}
+    if (translateXbox.button[e.detail.index] == 'rb') {sock.emit('pushCan', ['set_duty', 0])}
+    if (translateXbox.button[e.detail.index] == 'lb') {sock.emit('pushCan', ['set_duty', 0])}
   }
 }
 function translateXboxButtonManipulator(e, data, sock) {

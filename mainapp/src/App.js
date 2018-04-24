@@ -37,8 +37,13 @@ class App extends Component {
     this.setSensorState         = this.setSensorState.bind(this);
     this.setPowersupplyState    = this.setPowersupplyState.bind(this);
     this.setCanbusState         = this.setCanbusState.bind(this);
+    this.pushControllersState   = this.pushControllersState.bind(this);
+    this.pushSettingsState      = this.pushSettingsState.bind(this);
+    this.pushSensorState        = this.pushSensorState.bind(this);
+    this.pushPowersupplyState   = this.pushPowersupplyState.bind(this);
+    this.pushCanbusState        = this.pushCanbusState.bind(this);
     // Socket
-    this.sock = openSocket('http://192.168.1.92:8000');
+    this.sock = openSocket('http://192.168.1.238:8000');
     this.pulseGenerator = undefined;
     // Game controllers listener
     this.listener = new GamepadListener({analog: true, precision:0});
@@ -142,6 +147,12 @@ class App extends Component {
   setSensorState(sensordata)            {this.setState({sensordata})};
   setPowersupplyState(powersupplydata)  {this.setState({powersupplydata})};
   setCanbusState(canbusdata)            {this.setState({canbusdata})};
+  // State pushers
+  pushControllersState() {this.sock.emit('pushControllersState', this.state.controllerdata)};
+  pushSettingsState()    {this.sock.emit('pushSettingsState',    this.state.settingsdata)};
+  pushSensorState()      {this.sock.emit('pushSensorState',      this.state.sensordata)};
+  pushPowersupplyState() {this.sock.emit('pushPowersupplyState', this.state.powersupplydata)};
+  pushCanbusState()      {this.sock.emit('pushCanbusState',      this.state.canbusdata)};
   // Heartbeat
   heartStart() {
     this.setState((prevState) => {
