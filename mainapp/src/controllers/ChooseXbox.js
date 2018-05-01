@@ -1,6 +1,7 @@
 // Importing local functions
-import {tangentTransfers, sTransfers} from './Transferfunctions.js'
-import prepMotorMsg from './CanTranslateMotor.js'
+import {tangentTransfers, sTransfers} from './Transferfunctions.js';
+import prepMotorMsg from './CanTranslateMotor.js';
+
 
 // Library
 const translateXbox = {
@@ -68,8 +69,16 @@ function chooseXboxDesignation(e, data, sock, inptype) {
 }
 
 function translateXboxAxisThrusters(e, data, sock, axes, thrusts) {
-  sock.emit('pushCan', ['set_duty', thrusts[1]])
-  console.log(thrusts[1])
+  const transf = sTransfers(thrusts, 1)
+  switch (e.detail.index){
+    case 6:
+      sock.emit('pushRawCan', prepMotorMsg('01', 'set_duty', -transf[0]))
+      break;
+    case 7:
+      sock.emit('pushRawCan', prepMotorMsg('01', 'set_duty', transf[1]))
+      break;
+    default:
+  }
 }
 function translateXboxAxisManipulator(e, data, sock, axes, thrusts) {
 
@@ -91,10 +100,10 @@ function translateXboxButtonThrusters(e, data, sock) {
       case 'y':
         break;
       case 'lb':
-        sock.emit('pushCan', ['set_duty', 0.1])
+        //sock.emit('pushRawCan', prepMotorMsg('01', 'set_duty', -1))
         break;
       case 'rb':
-        sock.emit('pushCan', ['set_duty', 1])
+        //sock.emit('pushRawCan', prepMotorMsg('01', 'set_duty', 1))
         break;
       case 'select':
         break;
@@ -116,8 +125,12 @@ function translateXboxButtonThrusters(e, data, sock) {
     }
   }
   else {
-    if (translateXbox.button[e.detail.index] == 'rb') {sock.emit('pushCan', ['set_duty', 0])}
-    if (translateXbox.button[e.detail.index] == 'lb') {sock.emit('pushCan', ['set_duty', 0])}
+    //if (translateXbox.button[e.detail.index] == 'rb') {
+    //  sock.emit('pushRawCan', prepMotorMsg('01', 'set_duty', 0))
+    //}
+    //if (translateXbox.button[e.detail.index] == 'lb') {
+    //  sock.emit('pushRawCan', prepMotorMsg('01', 'set_duty', 0))
+    //}
   }
 }
 function translateXboxButtonManipulator(e, data, sock) {

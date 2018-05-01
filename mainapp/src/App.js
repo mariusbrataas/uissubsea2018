@@ -94,6 +94,7 @@ class App extends Component {
     this.listener.on('gamepad:button',       (event) => this.handleControllerClick(event));
     this.listener.on('gamepad:axis',         (event) => this.handleControllerAxis(event));
     // Binding socket event handlers
+    this.sock.on('disconnect',          ()         => {alert('Lost connection to server!')})
     this.sock.on('heartbeat',           (newstuff) => {this.heartUpdater(newstuff)});
     this.sock.on('pullSettingsdata',    (newstuff) => {this.setSettingsState(newstuff)});
     this.sock.on('pullSensordata',      (newstuff) => {this.setSensorState(newstuff)});

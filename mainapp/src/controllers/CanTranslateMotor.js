@@ -12,6 +12,17 @@ const cmd2adr = {
   'packet_status':        '09'
 };
 
+function decimalToHexString(number)
+{
+    if (number < 0)
+    {
+        number = 0xFFFFFFFF + number + 1;
+    }
+
+    var val = number.toString(16).toUpperCase();
+    return val
+}
+
 var adr2cmd = {};
 Object.keys(cmd2adr).map((cmd) => {adr2cmd[cmd2adr[cmd]] = cmd});
 
@@ -23,9 +34,9 @@ const scaling = {
   'set_pos':1000000
 }
 
-export function prepMotorMsg(id, cmd, value) {
+function prepMotorMsg(id, cmd, value) {
   var addr = parseInt((cmd2adr[cmd]).concat(id), 16);
-  var data = (value*scaling[cmd]).toString(16);
+  var data = decimalToHexString(Math.round(value*scaling[cmd]))
   for (var i = data.length; i < 8; i++) {data = '0'.concat(data)};
   const prepData = data.match(/.{1,2}/g);
   const msg = {
@@ -35,3 +46,5 @@ export function prepMotorMsg(id, cmd, value) {
   };
   return msg
 };
+
+export default prepMotorMsg

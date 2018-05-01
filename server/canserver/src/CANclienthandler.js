@@ -1,6 +1,4 @@
-
-
-class Clienthandler {
+class CANclienthandler {
   constructor(client, topServer) {
     // Basic class variables
     this.client = client;
@@ -19,10 +17,12 @@ class Clienthandler {
       this.isVerified = true;
       // Binding client event listeners
       this.client.on('pullHeartbeat', () => {client.emit('heartbeat', [new Date(), this.topServer.nclients])});
-      this.client.on('pushCan', (msg) => {this.canhandler.sendCanMsg(msg)});
-      this.client.on('pushMultipleCan', (msgs) {msgs.map((msg) => {this.canhandler.sendCanMsg(msg)})});
+      this.client.on('pushCan', (msg) => {this.canhandler.sendCAN(msg)});
+      this.client.on('pushMultipleCan', (msgs) {msgs.map((msg) => {this.canhandler.sendCAN(msg)})});
     } else {
       this.client.emit('connectionNotVerified'):
     };
   };
 };
+
+export default CANclienthandler

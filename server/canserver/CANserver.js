@@ -1,14 +1,14 @@
 var io = require('socket.io');
-import CANhandler from './src/Canhandler.js';
-import Clienthandler from './src/Clienthandler.js';
+import CANhandler from './src/CANhandler.js';
+import CANclienthandler from './src/CANclienthandler.js';
 
-class ROVserver {
+class CANserver {
   constructor(port) {
     // Basic class variables
     this.io = io();
+    this.canhandler = new CANhandler();
     this.nclients = 0;
     this.port = port;
-    this.canhandler = new CANhandler();
     // Activations library
     this.activations = {
       can: false,
@@ -26,7 +26,7 @@ class ROVserver {
     console.log('New connection');
     this.nclients++;
     client.on('disconnect', () => {this.nclients--});
-    var tmp = new Clienthandler(client, this);
+    var tmp = new CANclienthandler(client, this);
   }
 }
 
