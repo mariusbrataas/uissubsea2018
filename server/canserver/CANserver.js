@@ -1,6 +1,7 @@
-var io = require('socket.io');
 import CANhandler from './src/CANhandler.js';
 import CANclienthandler from './src/CANclienthandler.js';
+
+var io = require('socket.io');
 
 class CANserver {
   constructor(port) {

@@ -1,11 +1,15 @@
 {
-  "name": "uissubsea2018",
+  "name": "app2",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bootstrap": "^4.0.0",
     "react": "^16.3.2",
+    "react-button": "^1.2.1",
     "react-dom": "^16.3.2",
     "react-scripts": "1.1.4",
+    "react-side-menu": "^0.1.2",
+    "reactstrap": "^5.0.0-beta.3",
     "socket.io": "^2.1.0"
   },
   "scripts": {
