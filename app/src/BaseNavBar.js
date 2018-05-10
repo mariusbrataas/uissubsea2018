@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import {
   ButtonDropdown,
+  Button,
   Collapse,
   Navbar,
   NavbarToggler,
