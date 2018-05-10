@@ -34,6 +34,9 @@ class App extends Component {
     this.setNavState = this.setNavState.bind(this);
     this.setContState = this.setContState.bind(this);
     this.setServerState = this.setServerState.bind(this);
+    this.getNavState = this.getNavState.bind(this);
+    this.getContState = this.getContState.bind(this);
+    this.getServerState = this.getServerState.bind(this);
     this.lookForControllers = this.lookForControllers.bind(this);
     this.handleControllerAxis = this.handleControllerAxis.bind(this);
     this.handleControllerButton = this.handleControllerButton.bind(this);
@@ -43,11 +46,11 @@ class App extends Component {
     this.listener = new GamepadListener({analog: true, precision:6});
     // Building state library
     this.state = {
-      navState:               DefaultNavBarConfig(this.setNavState),
+      navState:               DefaultNavBarConfig(this.setNavState, this.getNavState),
       welcomeState:           DefaultWelcomeConfig(),
       dashState:              DefaultDashboardConfig(),
-      contState:              DefaultControllersConfig(this.setContState),
-      serverState:            DefaultServerConfig(this.setServerState, this.sock),
+      contState:              DefaultControllersConfig(this.setContState, this.getContState),
+      serverState:            DefaultServerConfig(this.setServerState, this.getServerState, this.sock),
       powersupplyState:       DefaultPowersupplyConfig(),
       motorcontrollersState:  DefaultMotorcontrollersConfig(),
       sensorsState:           DefaultSensorsConfig(),
@@ -89,6 +92,7 @@ class App extends Component {
     this.setContState(this.state.contState)
   };
   handleControllerAxis(e) {
+    // event -> smooth data -> choose controller config -> assign data based on config -> translate to normalized -> transform to thruster power
     const config = this.state.contState.controllers[e.detail.gamepad.index];
     if (config) {
       if (config.engage) {
@@ -122,6 +126,9 @@ class App extends Component {
   setContState(contState) {this.setState({contState})};
   setNavState(navState) {this.setState({navState})};
   setServerState(serverState) {this.setState({serverState})};
+  getContState() {return this.state.contState};
+  getNavState() {return this.state.navState};
+  getServerState() {return this.state.serverState};
   render() {
     switch (this.state.navState.selected) {
       case 'welcome':           return <ViewRenderer navState={this.state.navState} viewhandler={WelcomeView} data={this.state.welcomeState} serverdata={this.state.serverState}/>

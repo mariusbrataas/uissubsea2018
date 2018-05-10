@@ -22,7 +22,7 @@ export const WelcomeView = (props) => {
   const data = props.data;
   return (
     <div style={{padding:'20px'}}>
-     <Jumbotron>
+     <Jumbotron style={{borderLeft: '5px solid #0d75ee'}}>
        <h1 className="display-3">{data.title}</h1>
        <p className="lead">{data.subtitle}</p>
        <hr className="my-2" />
@@ -40,7 +40,9 @@ export const WelcomeView = (props) => {
             <Button outline color="success" onClick={() => {props.navdata.selected='server'; props.navdata.updateState(props.navdata)}}>Server settings</Button>
           </div>
          :
-          <VerificationBox data={props.serverdata}/>
+          <div style={{width:'300px'}}>
+            <VerificationBox data={props.serverdata}/>
+          </div>
        }
      </Jumbotron>
    </div>
