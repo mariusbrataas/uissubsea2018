@@ -72,7 +72,7 @@ const ServerCard = (props) => {
               <div>
                 <Button
                   outline
-                  color="success"
+                  color="primary"
                   onClick={() => {
                     data = data.getState();
                     data.verified = false;
@@ -96,7 +96,7 @@ const CanbusCard = (props) => {
         <CardTitle>CAN-bus</CardTitle>
         <CardSubtitle>Status: {configs.canbus.healthy ? (configs.canbus.active ? 'Active' : 'Healthy') : 'Unhealthy'}</CardSubtitle>
         <hr className="my-2" />
-        <Button outline color={configs.canbus.active ? 'danger' : 'success'} onClick={() => {data.configs.canbus.active ^= true; data.sock.emit('upstreamConfigs', data.configs)}}>{data.configs.canbus.active ? 'Deactivate' : 'Activate'}</Button>
+        <Button outline color={configs.canbus.active ? 'danger' : 'primary'} onClick={() => {data.configs.canbus.active ^= true; data.sock.emit('upstreamConfigs', data.configs)}}>{data.configs.canbus.active ? 'Deactivate' : 'Activate'}</Button>
       </CardBody>
     </Card>
   )

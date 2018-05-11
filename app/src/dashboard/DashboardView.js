@@ -13,11 +13,7 @@ export const DashboardView = (props) => {
   const data = props.data;
   return (
     <div style={{padding:'20px'}}>
-     <Jumbotron>
-       <h1 className="display-3">{data.title}</h1>
-       <p className="lead">{data.subtitle}</p>
-       <hr className="my-2" />
-     </Jumbotron>
+      <h1 className="display-3">Dashboard</h1>
    </div>
   )
 }

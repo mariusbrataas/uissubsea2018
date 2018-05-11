@@ -17,7 +17,7 @@ import {
 export function DefaultNavBarConfig(updateState) {
   return {
     title: 'UiS Subsea 2018',
-    selected: 'server',
+    selected: 'welcome',
     isOpen: false,
     updateState: updateState,
     items: {
@@ -28,14 +28,6 @@ export function DefaultNavBarConfig(updateState) {
     },
     views: {
       dashboard:  {value:'Dashboard'},
-    },
-    settingItems: {
-      server:             {value:'Server'},
-      controllers:        {value:'Controllers'},
-      powersupply:        {value:'Power supply'},
-      motorcontrollers:   {value:'Motor controllers'},
-      sensors:            {value:'Sensors'},
-      canbus:             {value:'CAN-bus'}
     },
     settingsOpen: false,
     cameraItems: {
@@ -52,12 +44,11 @@ export class BaseNavBar extends Component {
   constructor(props) {
     super(props);
     this.toggle = this.toggle.bind(this);
-    this.settingsToggle = this.settingsToggle.bind(this);
     this.camerasToggle = this.camerasToggle.bind(this);
     this.state = props.data;
+    this.serverdata = props.serverdata;
   };
   toggle() {this.setState({isOpen: !this.state.isOpen})}
-  settingsToggle() {this.setState({settingsOpen: !this.state.settingsOpen})}
   camerasToggle() {this.setState({camerasOpen: !this.state.camerasOpen})}
   render() {
     return (
@@ -67,65 +58,72 @@ export class BaseNavBar extends Component {
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="mr-auto" navbar>
+              <div style={{padding:'2px 0px'}}>
+                <Button
+                  color='primary'
+                  onClick={() => {
+                    this.state.selected = 'dashboard';
+                    this.state.updateState(this.state);
+                  }}
+                >Dashboard</Button>
+              </div>
+              <div style={{padding:'2px 0px'}}>
+                <ButtonDropdown isOpen={this.state.camerasOpen} toggle={this.camerasToggle} style={{padding:'0px 2px'}}>
+                  <DropdownToggle outline caret color="primary">
+                    Cameras
+                  </DropdownToggle>
+                  <DropdownMenu right>
+                    {
+                      Object.keys(this.state.cameraItems).map((key) => {
+                        return (
+                          <DropdownItem
+                            onClick={() => {
+                              this.state.selected = key;
+                              this.state.isOpen = false;
+                              this.state.updateState(this.state);
+                            }}
+                          >{this.state.cameraItems[key].value}</DropdownItem>
+                        )
+                      })
+                    }
+                  </DropdownMenu>
+                </ButtonDropdown>
+              </div>
+              <div style={{padding:'2px 0px'}}>
+                <Button
+                  outline
+                  color='primary'
+                  onClick={() => {
+                    this.state.selected = 'controllers';
+                    this.state.updateState(this.state);
+                  }}
+                >Controller settings</Button>
+              </div>
+            </Nav>
+            <Nav className="mc-auto" navbar>
+              <div style={{padding:'2px 0px'}}>
+                <Button
+                  outline
+                  color={this.serverdata.healthy ? (this.serverdata.verified ? 'primary' : 'success') : 'danger'}
+                  onClick={() => {
+                    this.state.selected = 'server';
+                    this.state.updateState(this.state);
+                  }}
+                >Server settings</Button>
+              </div>
               {
-                Object.keys(this.state.views).map((key) => {
-                  return (
-                    <NavItem>
-                      <NavLink
-                        active
-                        color='link'
-                        onClick={() => {
-                          this.state.selected = key;
-                          this.state.isOpen = false;
-                          this.state.updateState(this.state);
-                        }}
-                        href={this.state.views[key].ref}
-                        target='_blank'
-                      >{this.state.views[key].value}</NavLink>
-                    </NavItem>
-                  )
-                })
+                this.serverdata.verified ?
+                  <div style={{padding:'2px 2px'}}>
+                    <Button
+                      outline
+                      color='danger'
+                      onClick={() => {
+                        console.log('Emergency stop')
+                      }}
+                    >Emergency stop</Button>
+                  </div>
+                  : null
               }
-              <ButtonDropdown isOpen={this.state.camerasOpen} toggle={this.camerasToggle} style={{padding:'2px 2px'}}>
-                <DropdownToggle caret color="primary">
-                  Cameras
-                </DropdownToggle>
-                <DropdownMenu right>
-                  {
-                    Object.keys(this.state.cameraItems).map((key) => {
-                      return (
-                        <DropdownItem
-                          onClick={() => {
-                            this.state.selected = key;
-                            this.state.isOpen = false;
-                            this.state.updateState(this.state);
-                          }}
-                        >{this.state.cameraItems[key].value}</DropdownItem>
-                      )
-                    })
-                  }
-                </DropdownMenu>
-              </ButtonDropdown>
-              <ButtonDropdown isOpen={this.state.settingsOpen} toggle={this.settingsToggle} style={{padding:'2px 2px'}}>
-                <DropdownToggle caret color="primary">
-                  Settings
-                </DropdownToggle>
-                <DropdownMenu right>
-                  {
-                    Object.keys(this.state.settingItems).map((key) => {
-                      return (
-                        <DropdownItem
-                          onClick={() => {
-                            this.state.selected = key;
-                            this.state.isOpen = false;
-                            this.state.updateState(this.state);
-                          }}
-                        >{this.state.settingItems[key].value}</DropdownItem>
-                      )
-                    })
-                  }
-                </DropdownMenu>
-              </ButtonDropdown>
             </Nav>
             <Nav className="ml-auto" navbar>
               {

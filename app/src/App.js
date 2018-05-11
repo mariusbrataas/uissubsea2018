@@ -12,10 +12,6 @@ import {WelcomeView, DefaultWelcomeConfig} from './welcome/WelcomeView.js';
 import {DashboardView, DefaultDashboardConfig} from './dashboard/DashboardView.js';
 import {ControllersView, DefaultControllersConfig, DefaultControllerConfig} from './controllers/ControllersView.js';
 import {ServerView, DefaultServerConfig, ServerBindSocketListeners} from './server/ServerView.js';
-import {PowersupplyView, DefaultPowersupplyConfig} from './powersupply/PowersupplyView.js';
-import {MotorcontrollersView, DefaultMotorcontrollersConfig} from './motorcontrollers/MotorcontrollersView.js';
-import {SensorsView, DefaultSensorsConfig} from './sensors/SensorsView.js';
-import {CanbusView, DefaultCanbusConfig} from './canbus/CanbusView.js';
 import {FrontcenterView, DefaultFrontcenterConfig} from './cameras/FrontcenterView.js';
 import {FrontleftView, DefaultFrontleftConfig} from './cameras/FrontleftView.js';
 import {FrontrightView, DefaultFrontrightConfig} from './cameras/FrontrightView.js';
@@ -41,7 +37,7 @@ class App extends Component {
     this.handleControllerAxis = this.handleControllerAxis.bind(this);
     this.handleControllerButton = this.handleControllerButton.bind(this);
     // Socket
-    this.sock = openSocket('http://192.168.1.92:8000');
+    this.sock = openSocket('http://localhost:8000/');
     // Game controllers listener
     this.listener = new GamepadListener({analog: true, precision:6});
     // Building state library
@@ -51,10 +47,6 @@ class App extends Component {
       dashState:              DefaultDashboardConfig(),
       contState:              DefaultControllersConfig(this.setContState, this.getContState),
       serverState:            DefaultServerConfig(this.setServerState, this.getServerState, this.sock),
-      powersupplyState:       DefaultPowersupplyConfig(),
-      motorcontrollersState:  DefaultMotorcontrollersConfig(),
-      sensorsState:           DefaultSensorsConfig(),
-      canbusState:            DefaultCanbusConfig(),
       frontcenterState:       DefaultFrontcenterConfig(),
       frontleftState:         DefaultFrontleftConfig(),
       frontrightState:        DefaultFrontrightConfig(),
@@ -131,18 +123,14 @@ class App extends Component {
   getServerState() {return this.state.serverState};
   render() {
     switch (this.state.navState.selected) {
-      case 'welcome':           return <ViewRenderer navState={this.state.navState} viewhandler={WelcomeView} data={this.state.welcomeState} serverdata={this.state.serverState}/>
-      case 'dashboard':         return <ViewRenderer navState={this.state.navState} viewhandler={DashboardView} data={this.state.dashState}/>
-      case 'controllers':       return <ViewRenderer navState={this.state.navState} viewhandler={ControllersView} data={this.state.contState}/>
-      case 'server':            return <ViewRenderer navState={this.state.navState} viewhandler={ServerView} data={this.state.serverState}/>
-      case 'powersupply':       return <ViewRenderer navState={this.state.navState} viewhandler={PowersupplyView} data={this.state.powersupplyState}/>
-      case 'motorcontrollers':  return <ViewRenderer navState={this.state.navState} viewhandler={MotorcontrollersView} data={this.state.motorcontrollersState}/>
-      case 'sensors':           return <ViewRenderer navState={this.state.navState} viewhandler={SensorsView} data={this.state.sensorsState}/>
-      case 'canbus':            return <ViewRenderer navState={this.state.navState} viewhandler={CanbusView} data={this.state.canbusState}/>
-      case 'frontcenter':       return <ViewRenderer navState={this.state.navState} viewhandler={FrontcenterView} data={this.state.frontcenterState}/>
-      case 'frontleft':         return <ViewRenderer navState={this.state.navState} viewhandler={FrontleftView} data={this.state.frontleftState}/>
-      case 'frontright':        return <ViewRenderer navState={this.state.navState} viewhandler={FrontrightView} data={this.state.frontrightState}/>
-      case 'aft':               return <ViewRenderer navState={this.state.navState} viewhandler={AftView} data={this.state.aftState}/>
+      case 'welcome':           return <ViewRenderer navState={this.state.navState} serverdata={this.state.serverState} viewhandler={WelcomeView} data={this.state.welcomeState}/>
+      case 'dashboard':         return <ViewRenderer navState={this.state.navState} serverdata={this.state.serverState} viewhandler={DashboardView} data={this.state.dashState}/>
+      case 'controllers':       return <ViewRenderer navState={this.state.navState} serverdata={this.state.serverState} viewhandler={ControllersView} data={this.state.contState}/>
+      case 'server':            return <ViewRenderer navState={this.state.navState} serverdata={this.state.serverState} viewhandler={ServerView} data={this.state.serverState}/>
+      case 'frontcenter':       return <ViewRenderer navState={this.state.navState} serverdata={this.state.serverState} viewhandler={FrontcenterView} data={this.state.frontcenterState}/>
+      case 'frontleft':         return <ViewRenderer navState={this.state.navState} serverdata={this.state.serverState} viewhandler={FrontleftView} data={this.state.frontleftState}/>
+      case 'frontright':        return <ViewRenderer navState={this.state.navState} serverdata={this.state.serverState} viewhandler={FrontrightView} data={this.state.frontrightState}/>
+      case 'aft':               return <ViewRenderer navState={this.state.navState} serverdata={this.state.serverState} viewhandler={AftView} data={this.state.aftState}/>
       default: return <ViewRenderer navState={this.state.navState} viewhandler={DefaultViewHandler}/>
     }
   }
@@ -155,7 +143,7 @@ const DefaultViewHandler = (props) => {
 const ViewRenderer = (props) => {
   return (
     <div>
-      <BaseNavBar data={props.navState}/>
+      <BaseNavBar data={props.navState} serverdata={props.serverdata}/>
       <div className='mainFrame'>
         <props.viewhandler data={props.data} serverdata={props.serverdata ? props.serverdata : null} navdata={props.navState}/>
       </div>

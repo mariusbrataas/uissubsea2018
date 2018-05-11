@@ -195,8 +195,7 @@ export const ControllerSettingsCard = (props) => {
 export const ControllersView = (props) => {
   return (
     <div style={{padding:'20px', width:'auto'}}>
-    <Jumbotron>
-      <h2 className="display-3">Controllers</h2>
+      <h1 className="display-3">Controllers</h1>
       {
         Object.keys(props.data.controllers).map((key) => {
           return (
@@ -209,7 +208,6 @@ export const ControllersView = (props) => {
           )
         })
       }
-      </Jumbotron>
     </div>
   )
 }
