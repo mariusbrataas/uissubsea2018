@@ -3,11 +3,19 @@ import React from 'react';
 
 // 3rd party libraries
 import 'bootstrap/dist/css/bootstrap.css';
-import { Card, Button, Jumbotron, CardTitle, CardSubtitle, CardGroup, ButtonGroup, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Card, Button, Jumbotron, CardTitle, CardSubtitle, CardGroup, ButtonGroup, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Label, Input, FormGroup } from 'reactstrap';
 
 // Local libraries
 import TranslateXboxAxis from './TranslateXbox.js';
 import TransferToThrusters from './TransferToThrusters.js';
+
+export function ControllersBindSocketListeners(data) {
+  data.sock.on('loadControllerConfigs', (configs) => {
+    data = data.getState();
+    data.configoptions = configs;
+    data.updateState(data);
+  });
+}
 
 export function DefaultControllerConfig (index, id) {
   return {
@@ -69,16 +77,27 @@ export function DefaultControllerConfig (index, id) {
     designation: null,
     id: id ? id : 'XBOX Controller',
     translator: TranslateXboxAxis,
-    transfer: TransferToThrusters
+    transfer: TransferToThrusters,
+    optionsOpen: false,
+    currentConfig: "default",
+    newconfig: null
   };
 };
 
-export function DefaultControllersConfig(updateState) {
+export function DefaultControllersConfig(updateState, getState, sock) {
   return {
     controllers: {
       0:DefaultControllerConfig(0)
     },
+    configoptions: {
+      default: {
+        axes: DefaultControllerConfig(0).axes,
+        buttons: DefaultControllerConfig(0).buttons
+      }
+    },
     updateState: updateState,
+    getState: getState,
+    sock: sock,
   }
 }
 
@@ -95,6 +114,53 @@ export const ControllerSettingsCard = (props) => {
             props.data.controllers[props.contKey].engage ^= true;
             props.data.updateState(props.data)
           }}>{contData.engage ? 'Disengage' : 'Engage'}</Button>
+          <hr className="my-2" />
+          <div style={{marginTop:'20px'}}><CardSubtitle>Load controller configuration</CardSubtitle></div>
+          <div style={{padding: '10px 0px'}}>
+            <ButtonDropdown
+              isOpen={contData.optionsOpen}
+              toggle={() => {
+                props.data.controllers[props.contKey].optionsOpen ^= true;
+                props.data.updateState(props.data);
+              }}
+              >
+              <DropdownToggle caret>
+                {props.data.controllers[props.contKey].currentConfig}
+              </DropdownToggle>
+              <DropdownMenu right style={{overflowY:'hidden'}}>
+                {
+                  Object.keys(props.data.configoptions).map((option) => {
+                    return (
+                      <DropdownItem onClick={() => {
+                        props.data.controllers[props.contKey].currentConfig = ('').concat(option);
+                        props.data.controllers[props.contKey].axes = JSON.parse(JSON.stringify(props.data.configoptions[option].axes));
+                        props.data.controllers[props.contKey].buttons = JSON.parse(JSON.stringify(props.data.configoptions[option].buttons));
+                        props.data.updateState(props.data)
+                      }}>
+                      {option}</DropdownItem>
+                    )
+                  })
+                }
+              </DropdownMenu>
+            </ButtonDropdown>
+          </div>
+          <div style={{marginTop:'20px'}}>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              var newdata = props.data.getState();
+              const newax = newdata.controllers[props.contKey].axes;
+              const newbut = newdata.controllers[props.contKey].buttons;
+              props.data.sock.emit('saveControllerConfig', {title:props.data.controllers[props.contKey].newconfig, config:{axes:newax, buttons:newbut}});
+              props.data.controllers[props.contKey].currentConfig = ('').concat(props.data.controllers[props.contKey].newconfig);
+              props.data.controllers[props.contKey].newconfig = null;
+              props.data.updateState(props.data)
+            }}>
+              <Label>Save current controller configuration</Label>
+              <Input placeholder={props.data.controllers[props.contKey].newconfig ? null : 'Configuraion name'} onChange={(e) => {props.data.controllers[props.contKey].newconfig = e.target.value}}/>
+              <FormGroup>
+              </FormGroup>
+            </form>
+          </div>
         </div>
       </Card>
       <Card body outline color={contData.engage ? 'primary' : 'secondary'}>

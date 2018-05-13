@@ -1,14 +1,36 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Button, Jumbotron, Form, FormGroup, Label, Input, FormText, Card, CardImg, CardTitle, CardText, CardColumns,
- CardSubtitle, CardBody } from 'reactstrap';
+ CardSubtitle, CardBody, Nav, NavItem } from 'reactstrap';
 
 export function ServerBindSocketListeners(data) {
-  data.sock.on('connectionVerified', () => {data = data.getState(); data.verified = true; data.verificationfail = false; data.updateState(data)});
-  data.sock.on('connectionNotVerified', () => {data = data.getState(); data.verified = false; data.updateState(data)});
-  data.sock.on('connect', () => {data = data.getState(); data.healthy = true; data.updateState(data); data.sock.emit('verifyMe', 'passwd')});
-  data.sock.on('disconnect', () => {data = data.getState(); data.healthy = false; data.updateState(data)})
-  data.sock.on('downstreamConfigs', (configs) => {data = data.getState(); data.configs = configs; data.updateState(data)})
+  data.sock.on('connectionVerified', () => {
+    data = data.getState();
+    data.verified = true;
+    data.verificationfail = false;
+    data.updateState(data);
+  });
+  data.sock.on('connectionNotVerified', () => {
+    data = data.getState();
+    data.verified = false;
+    data.updateState(data);
+  });
+  data.sock.on('connect', () => {
+    data = data.getState();
+    data.healthy = true;
+    data.updateState(data);
+    data.sock.emit('verifyMe', 'passwd');
+  });
+  data.sock.on('disconnect', () => {
+    data = data.getState();
+    data.healthy = false;
+    data.updateState(data);
+  })
+  data.sock.on('downstreamConfigs', (configs) => {
+    data = data.getState();
+    data.configs = configs;
+    data.updateState(data);
+  })
 }
 
 export function DefaultServerConfig(updateState, getState, sock) {
@@ -30,7 +52,17 @@ export function DefaultServerConfig(updateState, getState, sock) {
       },
       motorcontrollers: {
         healthy: false,
-        active: false
+        active: false,
+        ids: {
+          flv: {title:'Front Left Vertical',    id:0, engage:false, status:{}}, // Front Left Vertical
+          frv: {title:'Front Right Vertical',   id:0, engage:false, status:{}}, // Front Right Vertical
+          alv: {title:'Aft Left Vertical',      id:0, engage:false, status:{}}, // Aft Left Vertical
+          arv: {title:'Aft Right Vertical',     id:0, engage:false, status:{}}, // Aft Right Vertical
+          flh: {title:'Front Left Horizontal',  id:0, engage:false, status:{}}, // Front Left Horizontal
+          frh: {title:'Front Right Horizontal', id:0, engage:false, status:{}}, // Front Right Horizontal
+          alh: {title:'Aft Left Horizontal',    id:0, engage:false, status:{}}, // Aft Left Horizontal
+          arh: {title:'Aft Right Horizontal',   id:0, engage:false, status:{}}, // Aft Right Horizontal
+        }
       },
       powersupply: {
         healthy: false,
@@ -78,7 +110,7 @@ const ServerCard = (props) => {
                     data.verified = false;
                     data.updateState(data);
                     data.sock.emit('verifyMe', 'passwd');
-                  }}>Verify connection</Button>
+                  }}>Update data</Button>
               </div>
             : <VerificationBox data={data}/>
         }
@@ -111,6 +143,27 @@ const MotorcontrollersCard = (props) => {
         <CardTitle>Motorcontrollers</CardTitle>
         <CardSubtitle>Status: {config.healthy ? (config.active ? 'Active' : 'Healthy') : 'Unhealthy'}</CardSubtitle>
         <hr className="my-2" />
+        <div style={{maxHeight:'50vh', overflow:'scroll'}}>
+          {
+            Object.keys(config.ids).map((key) => {
+              var tmp = config.ids[key]
+              return (
+                <div style={{paddingTop:'24px', marginLeft:'2px'}}>
+                  <CardSubtitle>{tmp.title}</CardSubtitle>
+                  <Nav>
+                    <form onSubmit={(e) => {e.preventDefault(); var newdata = data.getState(); newdata.configs.motorcontrollers.ids[key].id = tmp.id; data.sock.emit('upstreamConfigs', newdata.configs)}}>
+                        <Label>Controller ID: {tmp.id}</Label>
+                        <Input placeholder={tmp.id} onChange={(e) => {tmp.id = e.target.value}}/>
+                      <FormGroup>
+                      </FormGroup>
+                    </form>
+                  </Nav>
+                  <hr className="my-2" />
+                </div>
+              )
+            })
+          }
+        </div>
       </CardBody>
     </Card>
   )
@@ -141,26 +194,6 @@ const SensorsCard = (props) => {
         <hr className="my-2" />
       </CardBody>
     </Card>
-  )
-}
-
-const ServerSettingsView = (props) => {
-  return (
-    <div>
-      <CardColumns>
-        <ServerCard data={props.data}/>
-        {
-          props.data.verified ?
-            <div>
-              <CanbusCard data={props.data}/>
-              <MotorcontrollersCard data={props.data}/>
-              <PowersupplyCard data={props.data}/>
-              <SensorsCard data={props.data}/>
-            </div>
-            : null
-        }
-      </CardColumns>
-    </div>
   )
 }
 

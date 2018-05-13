@@ -6,12 +6,14 @@ import './App.css';
 import GamepadListener from './gamepad.js/dist/gamepad.js';
 import openSocket from 'socket.io-client';
 
-// View handlers
+// Main view handlers
 import {BaseNavBar, DefaultNavBarConfig} from './BaseNavBar.js';
 import {WelcomeView, DefaultWelcomeConfig} from './welcome/WelcomeView.js';
 import {DashboardView, DefaultDashboardConfig} from './dashboard/DashboardView.js';
-import {ControllersView, DefaultControllersConfig, DefaultControllerConfig} from './controllers/ControllersView.js';
+import {ControllersView, DefaultControllersConfig, DefaultControllerConfig, ControllersBindSocketListeners} from './controllers/ControllersView.js';
 import {ServerView, DefaultServerConfig, ServerBindSocketListeners} from './server/ServerView.js';
+
+// Camera view handlers
 import {FrontcenterView, DefaultFrontcenterConfig} from './cameras/FrontcenterView.js';
 import {FrontleftView, DefaultFrontleftConfig} from './cameras/FrontleftView.js';
 import {FrontrightView, DefaultFrontrightConfig} from './cameras/FrontrightView.js';
@@ -26,6 +28,7 @@ class App extends Component {
   constructor(props) {
     // Basic settings
     super(props);
+    this.useDummy = true;
     // Binding class methods
     this.setNavState = this.setNavState.bind(this);
     this.setContState = this.setContState.bind(this);
@@ -45,7 +48,7 @@ class App extends Component {
       navState:               DefaultNavBarConfig(this.setNavState, this.getNavState),
       welcomeState:           DefaultWelcomeConfig(),
       dashState:              DefaultDashboardConfig(),
-      contState:              DefaultControllersConfig(this.setContState, this.getContState),
+      contState:              DefaultControllersConfig(this.setContState, this.getContState, this.sock),
       serverState:            DefaultServerConfig(this.setServerState, this.getServerState, this.sock),
       frontcenterState:       DefaultFrontcenterConfig(),
       frontleftState:         DefaultFrontleftConfig(),
@@ -53,7 +56,8 @@ class App extends Component {
       aftState:               DefaultAftConfig(),
     };
     // Binding socket event handlers
-    ServerBindSocketListeners(this.state.serverState)
+    ServerBindSocketListeners(this.state.serverState);
+    ControllersBindSocketListeners(this.state.contState);
     // Binding listener event handlers
     this.listener.on('gamepad:connected', (e) => this.lookForControllers(e));
     this.listener.on('gamepad:disconnected', (e) => this.lookForControllers(e));
@@ -66,14 +70,12 @@ class App extends Component {
   };
   // Gamepad helpers
   lookForControllers() {
-    console.log('Look for controllers')
     const rawpads = this.listener.getGamepads();
     var indexes = {}
     for (var i = 0; i < rawpads.length; i++) {
       if (rawpads[i]) {
         indexes[rawpads[i].index] = null;
         if (!(rawpads[i].index in this.state.contState.controllers)) {
-          console.log('Rawpad index', rawpads[i].index)
           this.state.contState.controllers[rawpads[i].index] = DefaultControllerConfig(rawpads[i].index)
         }
       }
@@ -81,6 +83,7 @@ class App extends Component {
     Object.keys(this.state.contState.controllers).map((key) => {
       if (!(key in indexes)) {delete this.state.contState.controllers[key]}
     })
+    if (this.useDummy) {this.state.contState.controllers[0] = DefaultControllerConfig(0); this.state.contState.controllers[1] = DefaultControllerConfig(1)}
     this.setContState(this.state.contState)
   };
   handleControllerAxis(e) {

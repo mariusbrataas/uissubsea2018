@@ -53,7 +53,7 @@ export class BaseNavBar extends Component {
   render() {
     return (
       <div>
-        <Navbar color="light" light expand="md">
+        <Navbar color="light" light expand="md" fixed='top'>
           <NavbarBrand onClick={() => {this.state.selected = 'welcome'; this.state.updateState(this.state)}}>{this.state.title}</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
