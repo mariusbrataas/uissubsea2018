@@ -33,20 +33,22 @@ class App extends Component {
     this.setNavState = this.setNavState.bind(this);
     this.setContState = this.setContState.bind(this);
     this.setServerState = this.setServerState.bind(this);
+    this.setWelcomeState = this.setWelcomeState.bind(this);
     this.getNavState = this.getNavState.bind(this);
     this.getContState = this.getContState.bind(this);
     this.getServerState = this.getServerState.bind(this);
+    this.getWelcomeState = this.getWelcomeState.bind(this);
     this.lookForControllers = this.lookForControllers.bind(this);
     this.handleControllerAxis = this.handleControllerAxis.bind(this);
     this.handleControllerButton = this.handleControllerButton.bind(this);
     // Socket
-    this.sock = openSocket('http://localhost:8000/');
+    this.sock = openSocket('http://192.168.1.92:8000');
     // Game controllers listener
     this.listener = new GamepadListener({analog: true, precision:6});
     // Building state library
     this.state = {
       navState:               DefaultNavBarConfig(this.setNavState, this.getNavState),
-      welcomeState:           DefaultWelcomeConfig(),
+      welcomeState:           DefaultWelcomeConfig(this.setWelcomeState, this.getWelcomeState),
       dashState:              DefaultDashboardConfig(),
       contState:              DefaultControllersConfig(this.setContState, this.getContState, this.sock),
       serverState:            DefaultServerConfig(this.setServerState, this.getServerState, this.sock),
@@ -121,9 +123,11 @@ class App extends Component {
   setContState(contState) {this.setState({contState})};
   setNavState(navState) {this.setState({navState})};
   setServerState(serverState) {this.setState({serverState})};
+  setWelcomeState(welcomeState) {this.setState({welcomeState})};
   getContState() {return this.state.contState};
   getNavState() {return this.state.navState};
   getServerState() {return this.state.serverState};
+  getWelcomeState() {return this.state.welcomeState};
   render() {
     switch (this.state.navState.selected) {
       case 'welcome':           return <ViewRenderer navState={this.state.navState} serverdata={this.state.serverState} viewhandler={WelcomeView} data={this.state.welcomeState}/>

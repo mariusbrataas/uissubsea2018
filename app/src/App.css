@@ -30,3 +30,8 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.CircularProgressbar-path       { stroke: red; }
+.CircularProgressbar-trail      { stroke: gray; }
+.CircularProgressbar-text       { fill: yellow; }
+.CircularProgressbar-background { fill: green; }

@@ -1,6 +1,8 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
-import { Jumbotron } from 'reactstrap';
+import { Card, CardDeck } from 'reactstrap';
+
+import ThrustersLoad from './ThrustersLoad.js';
 
 export function DefaultDashboardConfig() {
   return {
@@ -14,6 +16,14 @@ export const DashboardView = (props) => {
   return (
     <div style={{padding:'20px'}}>
       <h1 className="display-3">Dashboard</h1>
+      <CardDeck>
+        <Card>
+          <ThrustersLoad/>
+        </Card>
+        <Card>
+          <ThrustersLoad/>
+        </Card>
+      </CardDeck>
    </div>
   )
 }
