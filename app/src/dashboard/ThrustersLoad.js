@@ -9,9 +9,10 @@ function f(percentage, n, k) {
 }
 
 function calcColors(percentage) {
-  const r = Math.round(f(percentage * (percentage >= 0), 4, 0.2) * 255);
-  const g = Math.round(f(1-Math.abs(percentage), 4, 0.2) * 100);
-  const b = 255 - r;
+  const f = Math.pow(Math.abs(percentage), 1/2);
+  const r = Math.round((percentage >= 0) * f * 230) + 25;
+  const g = Math.round((1 - f) * 155) + 100;
+  const b = Math.round((percentage < 0) * f * 230) + 25;
   return `rgba(${r},${g},${b},1)`
 }
 
@@ -19,10 +20,11 @@ const CircleLoad = (props) => {
   const loadColor = calcColors(props.percentage);
   return(
     <CircularProgressbar
-      percentage={Math.abs(props.percentage)}
+      percentage={Math.abs(props.percentage)*100}
       textForPercentage={(percentage) => {return `${Math.round(props.percentage*100)}%`}}
+      counterClockwise={props.percentage < 0 ? true : false}
       styles={{
-        path: {stroke: loadColor},
+        path: {stroke: loadColor, transition:'0.0s'},
         text: {fill: loadColor}
       }}
     />
@@ -33,28 +35,28 @@ export const ThrustersLoad = (props) => {
   return (
     <div>
       <div style={{width:'100%', overflow:'hidden'}}>
-        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad load={props.flh}/></div></div>
+        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad percentage={props.flh}/></div></div>
         <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}></div></div>
         <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}></div></div>
-        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad load={props.frh}/></div></div>
+        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad percentage={props.frh}/></div></div>
       </div>
       <div style={{width:'100%', overflow:'hidden'}}>
         <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}></div></div>
-        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad load={props.flv}/></div></div>
-        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad load={props.frv}/></div></div>
+        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad percentage={props.flv}/></div></div>
+        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad percentage={props.frv}/></div></div>
         <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}></div></div>
       </div>
       <div style={{width:'100%', overflow:'hidden'}}>
         <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}></div></div>
-        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad load={props.alv}/></div></div>
-        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad load={props.arv}/></div></div>
+        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad percentage={props.alv}/></div></div>
+        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad percentage={props.arv}/></div></div>
         <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}></div></div>
       </div>
       <div style={{width:'100%', overflow:'hidden'}}>
-        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad load={props.alh}/></div></div>
+        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad percentage={props.alh}/></div></div>
         <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}></div></div>
         <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}></div></div>
-        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad load={props.arh}/></div></div>
+        <div style={{width:'25%', float:'left'}}><div style={{padding:'1px'}}><CircleLoad percentage={props.arh}/></div></div>
       </div>
     </div>
   )

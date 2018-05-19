@@ -1,6 +1,14 @@
 var io = require('socket.io');
 const fs = require('fs');
 
+function LoadConfig(path) {
+  return JSON.parse(fs.readFileSync(path));
+}
+
+function SaveConfig(path, data) {
+  fs.writeFileSync(path, JSON.stringify(data, null, 4))
+}
+
 function LoadControllerConfigs() {
   return JSON.parse(fs.readFileSync('controllerconfigs.json'));
 }

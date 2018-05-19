@@ -12,7 +12,7 @@ class CANclienthandler {
     // Startup routines
   };
   handleVerification(passwd) {
-    if (passwd == 'Ingeniorkunst1') {
+    if (passwd == 'linaro') {
       this.client.emit('connectionVerified');
       this.isVerified = true;
       // Binding client event listeners

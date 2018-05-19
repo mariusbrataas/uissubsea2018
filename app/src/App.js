@@ -85,7 +85,7 @@ class App extends Component {
     Object.keys(this.state.contState.controllers).map((key) => {
       if (!(key in indexes)) {delete this.state.contState.controllers[key]}
     })
-    if (this.useDummy) {this.state.contState.controllers[0] = DefaultControllerConfig(0); this.state.contState.controllers[1] = DefaultControllerConfig(1)}
+    //if (this.useDummy) {this.state.contState.controllers[0] = DefaultControllerConfig(0); this.state.contState.controllers[1] = DefaultControllerConfig(1)}
     this.setContState(this.state.contState)
   };
   handleControllerAxis(e) {
@@ -95,6 +95,9 @@ class App extends Component {
       if (config.engage) {
           const translated = TranslateXboxAxis(e, config);
           const transfers = TransferToThrusters(translated);
+          const dashState = this.state.dashState;
+          dashState.loads = transfers;
+          this.setState({dashState});
       }
     }
   };
