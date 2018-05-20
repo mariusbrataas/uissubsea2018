@@ -3,7 +3,21 @@ import React from 'react';
 
 // 3rd party libraries
 import 'bootstrap/dist/css/bootstrap.css';
-import { Card, Button, Jumbotron, CardTitle, CardSubtitle, CardGroup, ButtonGroup, ButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem, Label, Input, FormGroup } from 'reactstrap';
+import {
+  Card,
+  Button,
+  CardTitle,
+  CardSubtitle,
+  CardGroup,
+  ButtonGroup,
+  ButtonDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Label,
+  Input,
+  FormGroup
+} from 'reactstrap';
 
 // Local libraries
 import TranslateXboxAxis from './TranslateXbox.js';

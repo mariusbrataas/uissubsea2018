@@ -4,10 +4,6 @@ import '../App.css';
 import CircularProgressbar from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
-function f(percentage, n, k) {
-  return k + Math.pow(Math.abs(percentage), 1/n) * (1-k)
-}
-
 function calcColors(percentage) {
   const f = Math.pow(Math.abs(percentage), 1/2);
   const r = Math.round((percentage >= 0) * f * 230) + 25;

@@ -10,13 +10,13 @@ function SaveConfig(path, data) {
 }
 
 function LoadControllerConfigs() {
-  return JSON.parse(fs.readFileSync('controllerconfigs.json'));
+  return JSON.parse(fs.readFileSync('../storage/configs/controllerconfigs.json'));
 }
 
 function AddControllerConfig(title, config) {
   var configs = LoadControllerConfigs();
   configs[title] = config;
-  fs.writeFileSync('controllerconfigs.json', JSON.stringify(configs, null, 4))
+  fs.writeFileSync('../storage/configs/controllerconfigs.json', JSON.stringify(configs, null, 4))
 }
 
 class Emptyserver {

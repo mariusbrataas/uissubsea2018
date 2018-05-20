@@ -1,7 +1,17 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
-import { Button, Jumbotron, Form, FormGroup, Label, Input, FormText, Card, CardImg, CardTitle, CardText, CardColumns,
- CardSubtitle, CardBody, Nav, NavItem } from 'reactstrap';
+import {
+  Button,
+  FormGroup,
+  Label,
+  Input,
+  Card,
+  CardTitle,
+  CardColumns,
+  CardSubtitle,
+  CardBody,
+  Nav
+} from 'reactstrap';
 
 export function ServerBindSocketListeners(data) {
   data.sock.on('connectionVerified', () => {

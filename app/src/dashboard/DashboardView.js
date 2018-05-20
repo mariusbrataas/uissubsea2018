@@ -1,6 +1,9 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
-import { Card, CardDeck } from 'reactstrap';
+import {
+  Card,
+  CardDeck
+} from 'reactstrap';
 
 import ThrustersLoad from './ThrustersLoad.js';
 
