@@ -1,4 +1,17 @@
 // event -> translator -> transfer -> push
+
+// Verticals =
+// [[ 1,-1, 1]  [[Roll]
+//  [-1,-1, 1]   [Pitch]
+//  [ 1, 1, 1]   [Vertical]]
+//  [-1, 1, 1]]
+
+// Horizontals =
+// [[ 1, 1, 1]  [[Longitudinal]
+//  [ 1,-1,-1]   [Lateral]
+//  [ 1,-1, 1]   [Yaw]]
+//  [ 1, 1,-1]]
+
 export default function TransferToThrusters(data) {
   const flvR = data.VERT + data.ROLL - data.PITCH;
   const frvR = data.VERT - data.ROLL - data.PITCH;

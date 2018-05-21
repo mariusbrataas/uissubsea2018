@@ -2,6 +2,7 @@ import React from 'react';
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Jumbotron, Button } from 'reactstrap';
+import ReactSimpleRange from 'react-simple-range';
 
 import {VerificationBox} from '../server/ServerView.js';
 
@@ -25,7 +26,7 @@ export function DefaultWelcomeConfig(updateState, getState) {
 export const WelcomeView = (props) => {
   const data = props.data;
   return (
-    <div style={{padding:'20px'}}>
+    <div style={{padding:'30px'}}>
       <Jumbotron style={{borderLeft: '5px solid #0d75ee'}}>
         <h1 className="display-3">{data.title}</h1>
         <p className="lead">{data.subtitle}</p>
@@ -49,6 +50,13 @@ export const WelcomeView = (props) => {
           </div>
         }
       </Jumbotron>
+      <div style={{height:'100px', width:'20%'}}>
+        <ReactSimpleRange onChange={(e) => {
+          data.col = (e.value-1)/99;
+          data.colstring = calcColors((e.value-1)/99)
+          data.updateState(data)
+        }}/>
+      </div>
     </div>
   )
 }
