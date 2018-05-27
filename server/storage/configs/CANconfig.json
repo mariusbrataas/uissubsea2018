@@ -1,0 +1,74 @@
+{
+  "flv": {
+    "title":"Front Left Vertical",
+    "id":13,
+    "engage":false,
+    "status":{}
+  },
+  "frv": {
+    "title":"Front Right Vertical",
+    "id":11,
+    "engage":false,
+    "status":{}
+  },
+  "alv": {
+    "title":"Aft Left Vertical",
+    "id":14,
+    "engage":false,
+    "status":{}
+  },
+  "arv": {
+    "title":"Aft Right Vertical",
+    "id":12,
+    "engage":false,
+    "status":{}
+  },
+  "flh": {
+    "title":"Front Left Horizontal",
+    "id":17,
+    "engage":false,
+    "status":{}
+  },
+  "frh": {
+    "title":"Front Right Horizontal",
+    "id":15,
+    "engage":false,
+    "status":{}
+  },
+  "alh": {
+    "title":"Aft Left Horizontal",
+    "id":18,
+    "engage":false,
+    "status":{}
+  },
+  "arh": {
+    "title":"Aft Right Horizontal",
+    "id":16,
+    "engage":false,
+    "status":{}
+  },
+  "Mgrab": {
+    "title":"Manipulator grabber",
+    "id":19,
+    "engage":false,
+    "status":{}
+  },
+  "Mrot": {
+    "title":"Rotate manipulator",
+    "id":20,
+    "engage":false,
+    "status":{}
+  },
+  "Mtilt": {
+    "title":"Tilt manipulator",
+    "id":21,
+    "engage":false,
+    "status":{}
+  },
+  "SPARE": {
+    "title":"SPARE",
+    "id":22,
+    "engage":false,
+    "status":{}
+  }
+}

@@ -1,38 +1,4 @@
-var can = require('socketcan');
-
-class CANhandler {
-  constructor(topServer) {
-    // Basic settings
-    this.channel = can.createRawChannel('can0', true);
-    this.topServer = topServer;
-    // Binding class methods
-    this.send = this.send.bind(this);
-    this.recv = this.recv.bind(this);
-    this.sendThrusts = this.sendThrusts.bind(this);
-    // Binding channel event listeners
-    this.channel.addListener("onMessage", (msg) => {this.recv(msg)});
-    // Startup routines
-    this.channel.start()
-  };
-  send(msg) {return channel.send(msg)};
-  recv(msg) {
-    console.log(msg);
-  };
-  sendThrusts(thrusts) {
-    const config = this.topServer.configs.canbus;
-    const msgs = Object.keys(thrusts).map((key, index) => {
-      if (config.config[key].engage) {
-        const msg = prepMotorMsg(config.config[key].id, config.thrustChanger, thrusts[key]);
-        this.send(msg)
-        return msg
-      } else {
-        return null
-      }
-    })
-  }
-}
-
-// Helpers for com with motorcontrollers
+// CanTranslateMotor.js
 const cmd2adr = {
   'set_duty':             '00',
   'set_current':          '01',
@@ -81,4 +47,4 @@ function prepMotorMsg(id, cmd, value) {
   return msg
 };
 
-export default CANhandler
+export default prepMotorMsg

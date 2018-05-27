@@ -113,9 +113,7 @@ class App extends Component {
             if (designator.current == 'Go up' || designator.current == 'Go down' || designator.current == 'Go left' || designator.current == 'Go right') {
               this.handleControllerAxis(e);
             } else {
-              if (e.detail.value == 1) {
-                TranslateToAction(designator.current, config, this.sock);
-              }
+              TranslateToAction(designator.current, config, this.sock);
             }
           }
         }

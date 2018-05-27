@@ -8,6 +8,7 @@ import {
   Card,
   CardTitle,
   CardColumns,
+  CardDeck,
   CardSubtitle,
   CardBody,
   Nav
@@ -58,12 +59,8 @@ export function DefaultServerConfig(updateState, getState, sock) {
     configs: {
       canbus: {
         healthy: false,
-        active: false
-      },
-      motorcontrollers: {
-        healthy: false,
         active: false,
-        ids: {
+        config: {
           flv: {title:'Front Left Vertical',    id:0, engage:false, status:{}}, // Front Left Vertical
           frv: {title:'Front Right Vertical',   id:0, engage:false, status:{}}, // Front Right Vertical
           alv: {title:'Aft Left Vertical',      id:0, engage:false, status:{}}, // Aft Left Vertical
@@ -131,37 +128,22 @@ const ServerCard = (props) => {
 
 const CanbusCard = (props) => {
   const data = props.data;
-  const configs = data.configs;
-  return (
-    <Card style={{borderLeft: ('5px solid ').concat(configs.canbus.healthy ? (configs.canbus.active ? data.activecolor : data.healthycolor) : data.unhealthycolor)}}>
-      <CardBody>
-        <CardTitle>CAN-bus</CardTitle>
-        <CardSubtitle>Status: {configs.canbus.healthy ? (configs.canbus.active ? 'Active' : 'Healthy') : 'Unhealthy'}</CardSubtitle>
-        <hr className="my-2" />
-        <Button outline color={configs.canbus.active ? 'danger' : 'primary'} onClick={() => {data.configs.canbus.active ^= true; data.sock.emit('upstreamConfigs', data.configs)}}>{data.configs.canbus.active ? 'Deactivate' : 'Activate'}</Button>
-      </CardBody>
-    </Card>
-  )
-}
-
-const MotorcontrollersCard = (props) => {
-  const data = props.data;
-  const config = data.configs.motorcontrollers;
+  const config = data.configs.canbus;
   return (
     <Card style={{borderLeft: ('5px solid ').concat(config.healthy ? (config.active ? data.activecolor : data.healthycolor) : data.unhealthycolor)}}>
       <CardBody>
-        <CardTitle>Motorcontrollers</CardTitle>
+        <CardTitle>CAN-bus</CardTitle>
         <CardSubtitle>Status: {config.healthy ? (config.active ? 'Active' : 'Healthy') : 'Unhealthy'}</CardSubtitle>
         <hr className="my-2" />
         <div style={{maxHeight:'50vh', overflow:'scroll'}}>
           {
-            Object.keys(config.ids).map((key) => {
-              var tmp = config.ids[key]
+            Object.keys(config.config).map((key) => {
+              var tmp = config.config[key]
               return (
                 <div style={{paddingTop:'24px', marginLeft:'2px'}}>
                   <CardSubtitle>{tmp.title}</CardSubtitle>
                   <Nav>
-                    <form onSubmit={(e) => {e.preventDefault(); var newdata = data.getState(); newdata.configs.motorcontrollers.ids[key].id = tmp.id; data.sock.emit('upstreamConfigs', newdata.configs)}}>
+                    <form onSubmit={(e) => {e.preventDefault(); var newdata = data.getState(); newdata.configs.canbus.config[key].id = tmp.id; data.sock.emit('upstreamConfigs', newdata.configs)}}>
                         <Label>Controller ID: {tmp.id}</Label>
                         <Input placeholder={tmp.id} onChange={(e) => {tmp.id = e.target.value}}/>
                       <FormGroup>
@@ -217,7 +199,6 @@ export const ServerView = (props) => {
           props.data.verified ?
             <div>
               <CanbusCard data={props.data}/>
-              <MotorcontrollersCard data={props.data}/>
               <PowersupplyCard data={props.data}/>
               <SensorsCard data={props.data}/>
             </div>

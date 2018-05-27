@@ -37,6 +37,12 @@ export function DefaultNavBarConfig(updateState) {
       aft:          {value:'Aft'}
     },
     camerasOpen: false,
+    stopWatch: {
+      intervalRef: null,
+      seconds: null,
+      current: "00:00",
+      isActive: false
+    }
   }
 }
 
@@ -45,11 +51,30 @@ export class BaseNavBar extends Component {
     super(props);
     this.toggle = this.toggle.bind(this);
     this.camerasToggle = this.camerasToggle.bind(this);
+    this.handleStartStopwatch = this.handleStartStopwatch.bind(this);
     this.state = props.data;
     this.serverdata = props.serverdata;
   };
   toggle() {this.setState({isOpen: !this.state.isOpen})}
   camerasToggle() {this.setState({camerasOpen: !this.state.camerasOpen})}
+  handleStartStopwatch() {
+    if (!this.state.stopWatch.isActive) {
+      var m = '';
+      var s = '';
+      this.state.stopWatch.isActive = true;
+      this.state.updateState(this.state);
+      if (!(this.state.stopWatch.seconds)) {this.state.stopWatch.seconds = 0}
+      this.state.stopWatch.intervalRef = setInterval(() => {
+        this.state.stopWatch.seconds++;
+        m = ''.concat(Math.floor(this.state.stopWatch.seconds/60));
+        if (m.length == 1) {m = '0'.concat(m)};
+        s = ''.concat(this.state.stopWatch.seconds % 60);
+        if (s.length == 1) {s = '0'.concat(s)}
+        this.state.stopWatch.current = ''.concat(m).concat(':').concat(s)
+        this.state.updateState(this.state)
+      }, 1000);
+    }
+  }
   render() {
     return (
       <div>
@@ -125,20 +150,47 @@ export class BaseNavBar extends Component {
                   : null
               }
             </Nav>
-            <Nav className="ml-auto" navbar>
-              {
-                Object.keys(this.state.items).map((key) => {
-                  return (
-                    <NavItem>
-                      <NavLink
-                        href={this.state.items[key].ref}
-                        target='_blank'
-                      >{this.state.items[key].value}</NavLink>
-                    </NavItem>
-                  )
-                })
-              }
-            </Nav>
+            {
+              this.state.stopWatch.isActive ?
+              <Nav className="ml-auto" navbar>
+                <div style={{padding:'2px 2px'}}>
+                  <Button
+                    color='danger'
+                    onClick={() => {
+                      clearInterval(this.state.stopWatch.intervalRef);
+                      this.state.stopWatch.isActive = false;
+                      this.state.stopWatch.seconds = null;
+                      this.state.stopWatch.current = "00:00";
+                      this.state.updateState(this.state)
+                    }}
+                  >Stop</Button>
+                </div>
+                <div style={{padding:'2px 2px'}}>
+                  <Button
+                    color='secondary'
+                    onClick={() => {
+                      clearInterval(this.state.stopWatch.intervalRef);
+                      this.state.stopWatch.isActive = false;
+                      this.state.updateState(this.state)
+                    }}
+                  >Pause</Button>
+                </div>
+              </Nav>
+              :
+              <Nav className="ml-auto" navbar>
+                <div>
+                  <Button
+                    color='success'
+                    onClick={() => {
+                      this.handleStartStopwatch()
+                    }}
+                  >Start</Button>
+                </div>
+              </Nav>
+            }
+            <div style={{marginLeft:'5px', width:'100px'}}>
+              <NavbarBrand>{this.state.stopWatch.current}</NavbarBrand>
+            </div>
           </Collapse>
         </Navbar>
       </div>

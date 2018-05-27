@@ -1,22 +1,11 @@
 var io = require('socket.io');
 const fs = require('fs');
-
-function LoadConfig(path) {
-  return JSON.parse(fs.readFileSync(path));
-}
-
-function SaveConfig(path, data) {
-  fs.writeFileSync(path, JSON.stringify(data, null, 4))
-}
-
-function LoadControllerConfigs() {
-  return JSON.parse(fs.readFileSync('../storage/configs/controllerconfigs.json'));
-}
+const JSONtools = require('../storage/JSONtools.js');
 
 function AddControllerConfig(title, config) {
-  var configs = LoadControllerConfigs();
+  var configs = JSONtools.LoadConfig('controllerconfigs');
   configs[title] = config;
-  fs.writeFileSync('../storage/configs/controllerconfigs.json', JSON.stringify(configs, null, 4))
+  JSONtools.SaveConfig('controllerconfigs', configs);
 }
 
 class Emptyserver {
@@ -29,21 +18,9 @@ class Emptyserver {
     this.configs = {
       canbus: {
         healthy: true,
-        active: false
-      },
-      motorcontrollers: {
-        healthy: false,
         active: false,
-        ids: {
-          flv: {title:'Front Left Vertical',    id:0, engage:false, status:{}}, // Front Left Vertical
-          frv: {title:'Front Right Vertical',   id:1, engage:false, status:{}}, // Front Right Vertical
-          alv: {title:'Aft Left Vertical',      id:2, engage:false, status:{}}, // Aft Left Vertical
-          arv: {title:'Aft Right Vertical',     id:3, engage:false, status:{}}, // Aft Right Vertical
-          flh: {title:'Front Left Horizontal',  id:4, engage:false, status:{}}, // Front Left Horizontal
-          frh: {title:'Front Right Horizontal', id:5, engage:false, status:{}}, // Front Right Horizontal
-          alh: {title:'Aft Left Horizontal',    id:6, engage:false, status:{}}, // Aft Left Horizontal
-          arh: {title:'Aft Right Horizontal',   id:7, engage:false, status:{}}, // Aft Right Horizontal
-        }
+        thrustChanger: 'set_duty',
+        config: JSONtools.LoadConfig('CANconfig')
       },
       powersupply: {
         healthy: false,
@@ -78,7 +55,7 @@ class Emptyclienthandler {
     // Binding class methods
     this.handleVerification = this.handleVerification.bind(this);
     // Controller configs
-    this.controllerconfigs = LoadControllerConfigs();
+    this.controllerconfigs = JSONtools.LoadConfig('controllerconfigs');
     // Binding client event listeners
     this.client.on('verifyMe', (passwd) => {this.handleVerification(passwd)});
     // Startup routines
@@ -98,7 +75,7 @@ class Emptyclienthandler {
         })
         this.client.on('saveControllerConfig', (data) => {
           AddControllerConfig(data.title, data.config);
-          this.controllerconfigs = LoadControllerConfigs();
+          this.controllerconfigs = JSONtools.LoadConfig('controllerconfigs');
           this.topServer.io.emit('loadControllerConfigs', this.controllerconfigs)
         })
       } else {

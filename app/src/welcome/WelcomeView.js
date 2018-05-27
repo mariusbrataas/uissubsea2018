@@ -45,18 +45,11 @@ export const WelcomeView = (props) => {
             <Button outline color="success" onClick={() => {props.navdata.selected='server'; props.navdata.updateState(props.navdata)}}>Server settings</Button>
           </div>
           :
-          <div style={{width:'300px'}}>
+          <div style={{maxWidth:'300px'}}>
             <VerificationBox data={props.serverdata}/>
           </div>
         }
       </Jumbotron>
-      <div style={{height:'100px', width:'20%'}}>
-        <ReactSimpleRange onChange={(e) => {
-          data.col = (e.value-1)/99;
-          data.colstring = calcColors((e.value-1)/99)
-          data.updateState(data)
-        }}/>
-      </div>
     </div>
   )
 }
