@@ -23,10 +23,7 @@ class CANhandler {
     const msgs = Object.keys(thrusts).map((key, index) => {
       if (config.config[key].engage) {
         const msg = prepMotorMsg(config.config[key].id, config.thrustChanger, thrusts[key]);
-        this.send(msg)
-        return msg
-      } else {
-        return null
+        if (config.config[key].id == 12) {this.send(msg)}
       }
     })
   }

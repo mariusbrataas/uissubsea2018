@@ -1,11 +1,12 @@
 var io = require('socket.io');
 var can = require('socketcan');
+const JSONtools = require('../storage/JSONtools.js');
 
 class CANserver {
   constructor(port) {
     // Basic class variables
     this.io = io();
-    this.canhandler = new CANhandler();
+    this.canhandler = new CANhandler(this);
     this.nclients = 0;
     this.port = port;
     // Configs
@@ -103,7 +104,7 @@ class CANhandler {
     // Startup routines
     this.channel.start()
   };
-  send(msg) {return channel.send(msg)};
+  send(msg) {return this.channel.send(msg)};
   recv(msg) {
     console.log(msg);
   };
@@ -172,4 +173,4 @@ function prepMotorMsg(id, cmd, value) {
 
 
 
-var server = new ROVserver(8000)
+var server = new CANserver(8000)
