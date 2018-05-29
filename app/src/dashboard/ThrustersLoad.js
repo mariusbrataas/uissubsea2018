@@ -23,6 +23,7 @@ const CircleLoad = (props) => {
         path: {stroke: loadColor, transition:'0.0s'},
         text: {fill: loadColor}
       }}
+      strokeWidth={8}
     />
   )
 }
