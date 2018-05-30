@@ -174,7 +174,10 @@ class CANclienthandler {
         })
         // Binding CAN-specific listeners
         this.client.on('pushCAN', (msg) => {this.canhandler.send(msg)});
-        this.client.on('pushThrusts', (thrusts) => {this.canhandler.sendThrusts(thrusts)});
+        this.client.on('pushThrusts', (thrusts) => {
+          this.client.emit('confirmThrusts');
+          this.canhandler.sendThrusts(thrusts)
+        });
       } else {
         this.client.emit('connectionNotVerified');
       };

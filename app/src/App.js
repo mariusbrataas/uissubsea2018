@@ -29,6 +29,7 @@ class App extends Component {
     // Basic settings
     super(props);
     this.useDummy = true;
+    this.contReady = true;
     // Binding class methods
     this.setNavState = this.setNavState.bind(this);
     this.setContState = this.setContState.bind(this);
@@ -42,9 +43,9 @@ class App extends Component {
     this.handleControllerAxis = this.handleControllerAxis.bind(this);
     this.handleControllerButton = this.handleControllerButton.bind(this);
     // Socket
-    this.sock = openSocket('http://192.168.1.112:8000');
+    this.sock = openSocket('http://192.168.1.254:8000');
     // Game controllers listener
-    this.listener = new GamepadListener({analog: true, precision:4});
+    this.listener = new GamepadListener({analog: true, precision:6});
     // Building state library
     this.state = {
       navState:               DefaultNavBarConfig(this.setNavState, this.getNavState),
@@ -58,6 +59,7 @@ class App extends Component {
       aftState:               DefaultAftConfig(),
     };
     // Binding socket event handlers
+    this.sock.on('confirmThrusts', (e) => {this.contReady = true});
     ServerBindSocketListeners(this.state.serverState);
     ControllersBindSocketListeners(this.state.contState);
     // Binding listener event handlers
@@ -69,6 +71,9 @@ class App extends Component {
     this.listener.start();
     this.lookForControllers();
     window.addEventListener('load', this.lookForControllers);
+    this.contInterval = setInterval(() => {
+      this.contReady = true;
+    }, 1000)
   };
   // Gamepad helpers
   lookForControllers() {
@@ -98,7 +103,10 @@ class App extends Component {
           const dashState = this.state.dashState;
           dashState.loads = transfers;
           this.setState({dashState});
-          this.sock.emit('pushThrusts', transfers)
+          if (this.contReady) {
+            this.contReady = false;
+            this.sock.emit('pushThrusts', transfers)
+          }
       }
     }
   };
