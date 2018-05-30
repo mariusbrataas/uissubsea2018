@@ -1,5 +1,7 @@
 var io = require('socket.io');
+var networking = require('simple-ifconfig');
 const JSONtools = require('../storage/JSONtools.js');
+
 
 var can = require('socketcan');
 
@@ -17,14 +19,27 @@ class simpleCAN {
     this.channel.addListener("onMessage", (msg) => {this.recv(msg)});
     // Startup routines
     this.channel.start()
+    this.knownAdrs = {};
   };
   send(msg) {return this.channel.send(msg)};
   recv(msg) {
     this.recvCount++;
+    const tmpid = msg.id.toString(16).substring(1);
+    if (!(tmpid in this.knownAdrs)) {this.knownAdrs[tmpid] = parseInt(tmpid, 16)}
   };
   sendThrust(id, thrust) {
+    this.sendCount++;
     const msg = prepMotorMsg(id, 'set_duty', thrust)
     this.send(msg)
+  };
+  stats() {
+    console.log(' ')
+    console.log('STATS')
+    console.log('N received msgs:   ', this.recvCount-this.sendCount)
+    console.log('N sent msgs:       ', this.sendCount)
+    console.log('N known addresses: ', Object.keys(this.knownAdrs).length)
+    console.log('Known addresses: ')
+    console.log(this.knownAdrs)
   }
 }
 
@@ -170,18 +185,34 @@ class CANhandler {
     // Basic settings
     this.channel = can.createRawChannel('can0', true);
     this.topServer = topServer;
+    this.sendCount = 0;
+    this.recvCount = 0;
+    this.ready = true;
+    this.netinfo = new networking.NetworkInfo();
     // Binding class methods
     this.send = this.send.bind(this);
     this.recv = this.recv.bind(this);
     this.sendThrusts = this.sendThrusts.bind(this);
+    this.resetBus = this.resetBus.bind(this);
     // Binding channel event listeners
     this.channel.addListener("onMessage", (msg) => {this.recv(msg)});
     // Startup routines
     this.channel.start()
   };
-  send(msg) {return this.channel.send(msg)};
+  resetBus() {
+    this.netinfo.applySettings('can0', {active:false});
+    this.netinfo.applySettings('can0', {active:false});
+  }
+  send(msg) {
+    this.sendCount++;
+    const res = this.channel.send(msg);
+    if (this.sendCount > 7500) {
+      this.sendCount = 0;
+      this.resetBus()
+    }
+  };
   recv(msg) {
-    console.log(msg);
+    this.recvCount++;
   };
   sendThrusts(thrusts) {
     const config = this.topServer.configs.canbus;

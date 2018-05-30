@@ -35,12 +35,12 @@ export function DefaultControllerConfig (index, id) {
   return {
     axes: {
       designators: {
-        LLR: {current:'Roll', reverse:false, engage:true, isOpen:false},
+        LLR: {current:'Yaw', reverse:false, engage:true, isOpen:false},
         LUD: {current:'Pitch', reverse:false, engage:true, isOpen:false},
         RLR: {current:'Lateral', reverse:false, engage:true, isOpen:false},
         RUD: {current:'Longitudinal', reverse:false, engage:true, isOpen:false},
-        LT:  {current:'Yaw', reverse:true, engage:true, isOpen:false},
-        RT:  {current:'Yaw', reverse:false, engage:true, isOpen:false}
+        LT:  {current:'Vertical', reverse:false, engage:true, isOpen:false},
+        RT:  {current:'Vertical', reverse:true, engage:true, isOpen:false}
       },
       options: ['Pitch','Roll','Yaw','Longitudinal','Lateral','Vertical'],
       title: 'Axis designations'
