@@ -52,8 +52,11 @@ class Emptyclienthandler {
     this.client = client;
     this.topServer = topServer;
     this.isVerified = false;
+    this.recvCount = 0;
+    this.sendCount = 0;
     // Binding class methods
     this.handleVerification = this.handleVerification.bind(this);
+    this.sendThrusts = this.sendThrusts.bind(this);
     // Controller configs
     this.controllerconfigs = JSONtools.LoadConfig('controllerconfigs');
     // Binding client event listeners
@@ -62,6 +65,12 @@ class Emptyclienthandler {
     this.client.emit('downstreamConfigs', this.topServer.configs)
     this.client.emit('loadControllerConfigs', this.controllerconfigs)
   };
+  sendThrusts(thrusts) {
+    Object.keys(thrusts).map((key, index) => {
+      this.sendCount++;
+    });
+    if (this.sendCount % 100 == 0) {console.log('SendCount: ', this.sendCount)}
+  };
   handleVerification(passwd) {
     if (this.isVerified) {
       this.client.emit('connectionVerified')
@@ -69,6 +78,7 @@ class Emptyclienthandler {
       if (passwd == 'linaro') {
         this.client.emit('connectionVerified');
         this.isVerified = true;
+        this.client.on('pushThrusts', (thrusts) => {this.sendThrusts(thrusts)});
         this.client.on('upstreamConfigs', (configs) => {
           this.topServer.configs = configs;
           this.topServer.io.emit('downstreamConfigs', this.topServer.configs)

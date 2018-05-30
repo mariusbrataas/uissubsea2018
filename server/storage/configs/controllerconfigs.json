@@ -6,7 +6,7 @@
                     "current": "Yaw",
                     "reverse": false,
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "LUD": {
                     "current": "Pitch",

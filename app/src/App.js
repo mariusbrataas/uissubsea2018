@@ -42,9 +42,9 @@ class App extends Component {
     this.handleControllerAxis = this.handleControllerAxis.bind(this);
     this.handleControllerButton = this.handleControllerButton.bind(this);
     // Socket
-    this.sock = openSocket('http://192.168.1.254:8000');
+    this.sock = openSocket('http://192.168.1.112:8000');
     // Game controllers listener
-    this.listener = new GamepadListener({analog: true, precision:6});
+    this.listener = new GamepadListener({analog: true, precision:4});
     // Building state library
     this.state = {
       navState:               DefaultNavBarConfig(this.setNavState, this.getNavState),

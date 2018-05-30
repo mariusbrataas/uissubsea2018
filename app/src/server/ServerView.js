@@ -30,7 +30,7 @@ export function ServerBindSocketListeners(data) {
     data = data.getState();
     data.healthy = true;
     data.updateState(data);
-    data.sock.emit('verifyMe', 'passwd');
+    data.sock.emit('verifyMe', data.passwd);
   });
   data.sock.on('disconnect', () => {
     data = data.getState();
@@ -202,7 +202,7 @@ export const ServerView = (props) => {
               <PowersupplyCard data={props.data}/>
               <SensorsCard data={props.data}/>
             </div>
-            : null
+          : null
         }
       </CardColumns>
     </div>

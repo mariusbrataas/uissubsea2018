@@ -15,6 +15,7 @@ class simpleCAN {
     this.send = this.send.bind(this);
     this.recv = this.recv.bind(this);
     this.sendThrust = this.sendThrust.bind(this);
+    this.test = this.test.bind(this);
     // Binding channel event listeners
     this.channel.addListener("onMessage", (msg) => {this.recv(msg)});
     // Startup routines
@@ -26,6 +27,11 @@ class simpleCAN {
     this.recvCount++;
     const tmpid = msg.id.toString(16).substring(1);
     if (!(tmpid in this.knownAdrs)) {this.knownAdrs[tmpid] = parseInt(tmpid, 16)}
+  };
+  test() {
+    Object.keys(this.knownAdrs).map((key,index) => {
+      this.sendThrust(key, 1)
+    });
   };
   sendThrust(id, thrust) {
     this.sendCount++;
@@ -201,14 +207,18 @@ class CANhandler {
   };
   resetBus() {
     this.netinfo.applySettings('can0', {active:false});
-    this.netinfo.applySettings('can0', {active:false});
+    this.netinfo.applySettings('can0', {active:true});
   }
   send(msg) {
-    this.sendCount++;
-    const res = this.channel.send(msg);
-    if (this.sendCount > 7500) {
-      this.sendCount = 0;
-      this.resetBus()
+    if (this.ready) {
+      this.sendCount++;
+      const res = this.channel.send(msg);
+      if (this.sendCount > 7500) {
+        this.ready = false;
+        this.sendCount = 0;
+        this.resetBus()
+        this.ready = true;
+      }
     }
   };
   recv(msg) {
