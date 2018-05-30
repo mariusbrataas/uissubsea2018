@@ -30,6 +30,7 @@ class App extends Component {
     super(props);
     this.useDummy = true;
     this.contReady = true;
+    this.lastSend = new Date();
     // Binding class methods
     this.setNavState = this.setNavState.bind(this);
     this.setContState = this.setContState.bind(this);
@@ -43,7 +44,7 @@ class App extends Component {
     this.handleControllerAxis = this.handleControllerAxis.bind(this);
     this.handleControllerButton = this.handleControllerButton.bind(this);
     // Socket
-    this.sock = openSocket('http://192.168.1.254:8000');
+    this.sock = openSocket('http://192.168.1.112:8000');
     // Game controllers listener
     this.listener = new GamepadListener({analog: true, precision:6});
     // Building state library
@@ -103,9 +104,9 @@ class App extends Component {
           const dashState = this.state.dashState;
           dashState.loads = transfers;
           this.setState({dashState});
-          if (this.contReady) {
-            this.contReady = false;
-            this.sock.emit('pushThrusts', transfers)
+          if ((new Date() - this.lastSend) > 10) {
+            this.lastSend = new Date();
+            this.sock.volatile.emit('pushThrusts', transfers)
           }
       }
     }

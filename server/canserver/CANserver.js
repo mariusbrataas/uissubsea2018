@@ -152,34 +152,34 @@ class CANclienthandler {
     // Binding client event listeners
     this.client.on('verifyMe', (passwd) => {this.handleVerification(passwd)});
     // Startup routines
-    this.client.emit('downstreamConfigs', this.topServer.configs)
-    this.client.emit('loadControllerConfigs', this.controllerconfigs)
+    this.client.volatile.emit('downstreamConfigs', this.topServer.configs)
+    this.client.volatile.emit('loadControllerConfigs', this.controllerconfigs)
   };
   handleVerification(passwd) {
     if (this.isVerified) {
-      this.client.emit('connectionVerified')
+      this.client.volatile.emit('connectionVerified')
     } else {
       if (passwd == 'linaro') {
         // Binding defaults for verified clients
-        this.client.emit('connectionVerified');
+        this.client.volatile.emit('connectionVerified');
         this.isVerified = true;
         this.client.on('upstreamConfigs', (configs) => {
           this.topServer.configs = configs;
-          this.topServer.io.emit('downstreamConfigs', this.topServer.configs)
+          this.topServer.io.volatile.emit('downstreamConfigs', this.topServer.configs)
         })
         this.client.on('saveControllerConfig', (data) => {
           AddControllerConfig(data.title, data.config);
           this.controllerconfigs = JSONtools.LoadConfig('controllerconfigs');
-          this.topServer.io.emit('loadControllerConfigs', this.controllerconfigs)
+          this.topServer.io.volatile.emit('loadControllerConfigs', this.controllerconfigs)
         })
         // Binding CAN-specific listeners
         this.client.on('pushCAN', (msg) => {this.canhandler.send(msg)});
         this.client.on('pushThrusts', (thrusts) => {
-          this.client.emit('confirmThrusts');
+          this.client.volatile.emit('confirmThrusts');
           this.canhandler.sendThrusts(thrusts)
         });
       } else {
-        this.client.emit('connectionNotVerified');
+        this.client.volatile.emit('connectionNotVerified');
       };
     };
   };
