@@ -38,9 +38,9 @@ export const DashboardView = (props) => {
             alv={loads.alv}
             arv={loads.arv}
             flh={loads.flh}
-            frh={loads.frh}
+            frh={-loads.frh}
             alh={loads.alh}
-            arh={loads.arh}
+            arh={-loads.arh}
           />
         </Card>
         <Card>

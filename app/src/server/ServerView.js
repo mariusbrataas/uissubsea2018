@@ -30,7 +30,7 @@ export function ServerBindSocketListeners(data) {
     data = data.getState();
     data.healthy = true;
     data.updateState(data);
-    data.sock.volatile.emit('verifyMe', data.passwd);
+    data.sock.emit('verifyMe', data.passwd);
   });
   data.sock.on('disconnect', () => {
     data = data.getState();
@@ -85,7 +85,7 @@ export function DefaultServerConfig(updateState, getState, sock) {
 
 export const VerificationBox = (props) => {
   return (
-    <form onSubmit={(e) => {e.preventDefault(); props.data.updateState(props.data); props.data.sock.volatile.emit('verifyMe', props.data.passwd)}}>
+    <form onSubmit={(e) => {e.preventDefault(); props.data.updateState(props.data); props.data.sock.emit('verifyMe', props.data.passwd)}}>
       <FormGroup>
         <Label for="pass">Enter password to verify access to server</Label>
         <Input id="pass" type="password" placeholder="Password" onChange={(e) => {props.data.passwd = e.target.value}}/>
@@ -116,7 +116,7 @@ const ServerCard = (props) => {
                     data = data.getState();
                     data.verified = false;
                     data.updateState(data);
-                    data.sock.volatile.emit('verifyMe', 'passwd');
+                    data.sock.emit('verifyMe', 'passwd');
                   }}>Update data</Button>
               </div>
             : <VerificationBox data={data}/>
@@ -143,7 +143,7 @@ const CanbusCard = (props) => {
                 <div style={{paddingTop:'24px', marginLeft:'2px'}}>
                   <CardSubtitle>{tmp.title}</CardSubtitle>
                   <Nav>
-                    <form onSubmit={(e) => {e.preventDefault(); var newdata = data.getState(); newdata.configs.canbus.config[key].id = tmp.id; data.sock.volatile.emit('upstreamConfigs', newdata.configs)}}>
+                    <form onSubmit={(e) => {e.preventDefault(); var newdata = data.getState(); newdata.configs.canbus.config[key].id = tmp.id; data.sock.emit('upstreamConfigs', newdata.configs)}}>
                         <Label>Controller ID: {tmp.id}</Label>
                         <Input placeholder={tmp.id} onChange={(e) => {tmp.id = e.target.value}}/>
                       <FormGroup>

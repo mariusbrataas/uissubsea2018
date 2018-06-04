@@ -44,7 +44,7 @@ class App extends Component {
     this.handleControllerAxis = this.handleControllerAxis.bind(this);
     this.handleControllerButton = this.handleControllerButton.bind(this);
     // Socket
-    this.sock = openSocket('http://192.168.1.112:8000');
+    this.sock = openSocket('http://192.168.1.113:8000');
     // Game controllers listener
     this.listener = new GamepadListener({analog: true, precision:6});
     // Building state library
@@ -106,7 +106,7 @@ class App extends Component {
           this.setState({dashState});
           if ((new Date() - this.lastSend) > 10) {
             this.lastSend = new Date();
-            this.sock.volatile.emit('pushThrusts', transfers)
+            this.sock.emit('pushThrusts', transfers)
           }
       }
     }

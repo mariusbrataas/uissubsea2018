@@ -10,7 +10,7 @@
                 },
                 "LUD": {
                     "current": "Pitch",
-                    "reverse": 1,
+                    "reverse": true,
                     "engage": true,
                     "isOpen": false
                 },
@@ -22,7 +22,7 @@
                 },
                 "RUD": {
                     "current": "Longitudinal",
-                    "reverse": 1,
+                    "reverse": true,
                     "engage": true,
                     "isOpen": false
                 },
@@ -154,37 +154,37 @@
                     "current": "Lateral",
                     "reverse": false,
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "LUD": {
                     "current": "Longitudinal",
-                    "reverse": 1,
+                    "reverse": true,
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "RLR": {
                     "current": "Yaw",
                     "reverse": false,
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "RUD": {
                     "current": "Pitch",
-                    "reverse": 0,
+                    "reverse": false,
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "LT": {
                     "current": "Vertical",
-                    "reverse": 1,
+                    "reverse": true,
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "RT": {
                     "current": "Vertical",
                     "reverse": false,
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 }
             },
             "options": [
@@ -301,13 +301,13 @@
                 "LLR": {
                     "current": "Yaw",
                     "reverse": false,
-                    "engage": 1,
-                    "isOpen": 0
+                    "engage": true,
+                    "isOpen": false
                 },
                 "LUD": {
                     "current": "Pitch",
-                    "reverse": 1,
-                    "engage": 1,
+                    "reverse": true,
+                    "engage": true,
                     "isOpen": false
                 },
                 "RLR": {
@@ -318,7 +318,7 @@
                 },
                 "RUD": {
                     "current": "Longitudinal",
-                    "reverse": 1,
+                    "reverse": true,
                     "engage": true,
                     "isOpen": false
                 },
@@ -326,13 +326,13 @@
                     "current": "Vertical",
                     "reverse": true,
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "RT": {
                     "current": "Vertical",
                     "reverse": false,
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 }
             },
             "options": [
@@ -355,7 +355,7 @@
                 "B": {
                     "current": "Release",
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "X": {
                     "current": "Rotate manip right",
@@ -369,28 +369,28 @@
                 },
                 "LS": {
                     "current": "Toggle lights",
-                    "engage": 1,
-                    "isOpen": 0
+                    "engage": true,
+                    "isOpen": false
                 },
                 "RS": {
                     "current": "Lights off",
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "UP": {
                     "current": "Camera up",
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "DOWN": {
                     "current": "Camera down",
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "LEFT": {
                     "current": "Engage auto depth",
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "RIGHT": {
                     "current": "Disengage auto depth",
@@ -443,20 +443,20 @@
             "title": "Button designations"
         }
     },
-    "Sjefen9000": {
+    "Sjefen9falsefalsefalse": {
         "axes": {
             "designators": {
                 "LLR": {
                     "current": "Yaw",
                     "reverse": false,
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "LUD": {
                     "current": "Pitch",
-                    "reverse": 1,
+                    "reverse": true,
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "RLR": {
                     "current": "Lateral",
@@ -466,7 +466,7 @@
                 },
                 "RUD": {
                     "current": "Longitudinal",
-                    "reverse": 1,
+                    "reverse": true,
                     "engage": true,
                     "isOpen": false
                 },
@@ -474,13 +474,13 @@
                     "current": "Longitudinal",
                     "reverse": true,
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "RT": {
                     "current": "Longitudinal",
                     "reverse": false,
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 }
             },
             "options": [
@@ -508,12 +508,12 @@
                 "X": {
                     "current": "Rotate manip left",
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "Y": {
                     "current": "Rotate manip right",
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "LS": {
                     "current": "Lights on",
@@ -528,22 +528,22 @@
                 "UP": {
                     "current": "Camera up",
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "DOWN": {
                     "current": "Camera down",
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "LEFT": {
                     "current": "Camera left",
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "RIGHT": {
                     "current": "Camera right",
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "LB": {
                     "current": "Go left",
@@ -558,7 +558,7 @@
                 "SELECT": {
                     "current": "Engage auto level",
                     "engage": true,
-                    "isOpen": 0
+                    "isOpen": false
                 },
                 "MENU": {
                     "current": "Disengage auto level",

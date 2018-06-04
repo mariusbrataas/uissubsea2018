@@ -1,9 +1,14 @@
 var io = require('socket.io');
-var networking = require('simple-ifconfig');
 const JSONtools = require('../storage/JSONtools.js');
 
-
+var networking = require('simple-ifconfig');
 var can = require('socketcan');
+
+function AddControllerConfig(title, config) {
+  var configs = JSONtools.LoadConfig('controllerconfigs');
+  configs[title] = config;
+  JSONtools.SaveConfig('controllerconfigs', configs);
+}
 
 class simpleCAN {
   constructor() {
@@ -11,32 +16,51 @@ class simpleCAN {
     this.channel = can.createRawChannel('can0', true);
     this.recvCount = 0;
     this.sendCount = 0;
+    this.netinfo = new networking.NetworkInfo();
+    this.lastSend = new Date();
+    this.queue = [];
     // Binding class methods
     this.send = this.send.bind(this);
     this.recv = this.recv.bind(this);
     this.sendThrust = this.sendThrust.bind(this);
     this.test = this.test.bind(this);
+    this.resetBus = this.resetBus.bind(this);
     // Binding channel event listeners
     this.channel.addListener("onMessage", (msg) => {this.recv(msg)});
     // Startup routines
     this.channel.start()
     this.knownAdrs = {};
   };
-  send(msg) {return this.channel.send(msg)};
+  resetBus() {
+    this.netinfo.applySettings('can0', {active:false});
+    this.netinfo.applySettings('can0', {active:true});
+  };
+  send(msg) {
+    this.sendCount++;
+    this.lastSend = new Date();
+    if (this.sendCount > 100) {
+      console.log('Start bus reset')
+      this.sendCount = 0;
+      this.resetBus()
+      console.log('End bus reset')
+    }
+    this.netinfo.applySettings('can0', {active:true});
+    this.channel.send(msg)
+    var tmp = 0;
+    //while ((new Date() - this.lastSend) < 50) {tmp = 0}
+  };
   recv(msg) {
     this.recvCount++;
     const tmpid = msg.id.toString(16).substring(1);
     if (!(tmpid in this.knownAdrs)) {this.knownAdrs[tmpid] = parseInt(tmpid, 16)}
   };
   test() {
-    Object.keys(this.knownAdrs).map((key,index) => {
+    Object.keys(this.knownAdrs).forEach((key) => {
       this.sendThrust(key, 1)
-    });
+    })
   };
   sendThrust(id, thrust) {
-    this.sendCount++;
-    const msg = prepMotorMsg(id, 'set_duty', thrust)
-    this.send(msg)
+    this.send(prepMotorMsg(id, 'set_duty', thrust))
   };
   stats() {
     console.log(' ')
@@ -175,7 +199,6 @@ class CANclienthandler {
         // Binding CAN-specific listeners
         this.client.on('pushCAN', (msg) => {this.canhandler.send(msg)});
         this.client.on('pushThrusts', (thrusts) => {
-          this.client.volatile.emit('confirmThrusts');
           this.canhandler.sendThrusts(thrusts)
         });
       } else {
@@ -198,6 +221,8 @@ class CANhandler {
     this.recvCount = 0;
     this.ready = true;
     this.netinfo = new networking.NetworkInfo();
+    this.knownAdrs = {}
+    this.lastSend = new Date();
     // Binding class methods
     this.send = this.send.bind(this);
     this.recv = this.recv.bind(this);
@@ -213,29 +238,27 @@ class CANhandler {
     this.netinfo.applySettings('can0', {active:true});
   }
   send(msg) {
-    if (this.ready) {
-      this.sendCount++;
-      const res = this.channel.send(msg);
-      if (this.sendCount > 7500) {
-        this.ready = false;
-        this.sendCount = 0;
-        this.resetBus()
-        this.ready = true;
-      }
+    this.lastSend = new Date();
+    if (this.sendCount > 1000) {
+      console.log('Start bus reset')
+      this.sendCount = 0;
+      this.resetBus()
+      console.log('End bus reset')
     }
+    this.channel.send(msg)
+    var tmp = 0;
   };
   recv(msg) {
     this.recvCount++;
+    const tmpid = msg.id.toString(16).substring(1);
+    if (!(tmpid in this.knownAdrs)) {this.knownAdrs[tmpid] = parseInt(tmpid, 16)}
   };
   sendThrusts(thrusts) {
     const config = this.topServer.configs.canbus;
-    const msgs = Object.keys(thrusts).map((key, index) => {
+    const msgs = Object.keys(thrusts).forEach((key) => {
       if (config.config[key].engage) {
         const msg = prepMotorMsg(config.config[key].id, config.thrustChanger, thrusts[key]);
         this.send(msg)
-        return msg
-      } else {
-        return null
       }
     })
   }

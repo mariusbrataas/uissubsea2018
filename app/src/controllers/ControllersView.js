@@ -164,7 +164,7 @@ export const ControllerSettingsCard = (props) => {
               var newdata = props.data.getState();
               const newax = newdata.controllers[props.contKey].axes;
               const newbut = newdata.controllers[props.contKey].buttons;
-              props.data.sock.volatile.emit('saveControllerConfig', {title:props.data.controllers[props.contKey].newconfig, config:{axes:newax, buttons:newbut}});
+              props.data.sock.emit('saveControllerConfig', {title:props.data.controllers[props.contKey].newconfig, config:{axes:newax, buttons:newbut}});
               props.data.controllers[props.contKey].currentConfig = ('').concat(props.data.controllers[props.contKey].newconfig);
               props.data.controllers[props.contKey].newconfig = null;
               props.data.updateState(props.data)
