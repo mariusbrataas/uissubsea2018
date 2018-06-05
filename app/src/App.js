@@ -24,6 +24,8 @@ import {TranslateXboxAxis, index2XboxBtn, index2XboxAxis} from './controllers/Tr
 import TransferToThrusters from './controllers/TransferToThrusters.js';
 import TranslateToAction from './controllers/TranslateToAction.js';
 
+var bonjour = require('bonjour')
+
 class App extends Component {
   constructor(props) {
     // Basic settings
