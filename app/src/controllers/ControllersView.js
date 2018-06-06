@@ -36,9 +36,9 @@ export function DefaultControllerConfig (index, id) {
     axes: {
       designators: {
         LLR: {current:'Yaw', reverse:false, engage:true, isOpen:false},
-        LUD: {current:'Pitch', reverse:false, engage:true, isOpen:false},
+        LUD: {current:'Pitch', reverse:true, engage:true, isOpen:false},
         RLR: {current:'Lateral', reverse:false, engage:true, isOpen:false},
-        RUD: {current:'Longitudinal', reverse:false, engage:true, isOpen:false},
+        RUD: {current:'Longitudinal', reverse:true, engage:true, isOpen:false},
         LT:  {current:'Vertical', reverse:false, engage:true, isOpen:false},
         RT:  {current:'Vertical', reverse:true, engage:true, isOpen:false}
       },

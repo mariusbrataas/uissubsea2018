@@ -7,7 +7,7 @@ import {
 
 import ThrustersLoad from './ThrustersLoad.js';
 
-export function DefaultDashboardConfig() {
+export function DefaultDashboardConfig(sendThrusts) {
   return {
     title: 'Dashboard',
     subtitle: 'Not finished.',
@@ -20,7 +20,8 @@ export function DefaultDashboardConfig() {
       frh: 0.0,
       alh: 0.0,
       arh: 0.0
-    }
+    },
+    sendThrusts: sendThrusts
   }
 };
 
@@ -33,14 +34,15 @@ export const DashboardView = (props) => {
       <CardDeck>
         <Card>
           <ThrustersLoad
+            sendThrusts={data.sendThrusts}
             flv={loads.flv}
             frv={loads.frv}
             alv={loads.alv}
             arv={loads.arv}
             flh={loads.flh}
-            frh={-loads.frh}
+            frh={loads.frh}
             alh={loads.alh}
-            arh={-loads.arh}
+            arh={loads.arh}
           />
         </Card>
         <Card>

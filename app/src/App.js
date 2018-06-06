@@ -45,6 +45,8 @@ class App extends Component {
     this.lookForControllers = this.lookForControllers.bind(this);
     this.handleControllerAxis = this.handleControllerAxis.bind(this);
     this.handleControllerButton = this.handleControllerButton.bind(this);
+    this.sendThrustData = this.sendThrustData.bind(this);
+    this.paintThrustData = this.paintThrustData.bind(this);
     // Socket
     this.sock = openSocket('http://192.168.1.113:8000');
     // Game controllers listener
@@ -53,7 +55,7 @@ class App extends Component {
     this.state = {
       navState:               DefaultNavBarConfig(this.setNavState, this.getNavState),
       welcomeState:           DefaultWelcomeConfig(this.setWelcomeState, this.getWelcomeState),
-      dashState:              DefaultDashboardConfig(),
+      dashState:              DefaultDashboardConfig(this.sendThrustData),
       contState:              DefaultControllersConfig(this.setContState, this.getContState, this.sock),
       serverState:            DefaultServerConfig(this.setServerState, this.getServerState, this.sock),
       frontcenterState:       DefaultFrontcenterConfig(),
@@ -63,6 +65,7 @@ class App extends Component {
     };
     // Binding socket event handlers
     this.sock.on('confirmThrusts', (e) => {this.contReady = true});
+    this.sock.on('paintThrusts', (thrusts) => {this.paintThrustData(thrusts)})
     ServerBindSocketListeners(this.state.serverState);
     ControllersBindSocketListeners(this.state.contState);
     // Binding listener event handlers
@@ -93,7 +96,7 @@ class App extends Component {
     Object.keys(this.state.contState.controllers).map((key) => {
       if (!(key in indexes)) {delete this.state.contState.controllers[key]}
     })
-    //if (this.useDummy) {this.state.contState.controllers[0] = DefaultControllerConfig(0); this.state.contState.controllers[1] = DefaultControllerConfig(1)}
+    if (this.useDummy) {this.state.contState.controllers[0] = DefaultControllerConfig(0); this.state.contState.controllers[1] = DefaultControllerConfig(1)}
     this.setContState(this.state.contState)
   };
   handleControllerAxis(e) {
@@ -101,17 +104,20 @@ class App extends Component {
     const config = this.state.contState.controllers[e.detail.gamepad.index];
     if (config) {
       if (config.engage) {
-          const translated = TranslateXboxAxis(e, config);
-          const transfers = TransferToThrusters(translated);
-          const dashState = this.state.dashState;
-          dashState.loads = transfers;
-          this.setState({dashState});
-          if ((new Date() - this.lastSend) > 10) {
-            this.lastSend = new Date();
-            this.sock.emit('pushThrusts', transfers)
-          }
+        const translated = TranslateXboxAxis(e, config);
+        const transfers = TransferToThrusters(translated);
+        this.sendThrustData(transfers)
       }
     }
+  };
+  sendThrustData(thrusts) {
+    this.paintThrustData(thrusts)
+    this.sock.emit('pushThrusts', thrusts)
+  };
+  paintThrustData(thrusts) {
+    const dashState = this.state.dashState;
+    dashState.loads = thrusts;
+    this.setState({dashState});
   };
   handleControllerButton(e) {
     const config = this.state.contState.controllers[e.detail.gamepad.index];

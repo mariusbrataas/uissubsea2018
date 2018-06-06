@@ -134,13 +134,13 @@ const CanbusCard = (props) => {
       <CardBody>
         <CardTitle>CAN-bus</CardTitle>
         <CardSubtitle>Status: {config.healthy ? (config.active ? 'Active' : 'Healthy') : 'Unhealthy'}</CardSubtitle>
-        <hr className="my-2" />
         <div style={{maxHeight:'50vh', overflow:'scroll'}}>
           {
             Object.keys(config.config).map((key) => {
               var tmp = config.config[key]
               return (
-                <div style={{paddingTop:'24px', marginLeft:'2px'}}>
+                <div style={{paddingTop:'10px', marginLeft:'2px', paddingBottom:'15px'}}>
+                  <hr className="my-2" />
                   <CardSubtitle>{tmp.title}</CardSubtitle>
                   <Nav>
                     <form onSubmit={(e) => {e.preventDefault(); var newdata = data.getState(); newdata.configs.canbus.config[key].id = tmp.id; data.sock.emit('upstreamConfigs', newdata.configs)}}>
@@ -150,7 +150,11 @@ const CanbusCard = (props) => {
                       </FormGroup>
                     </form>
                   </Nav>
-                  <hr className="my-2" />
+                  <Button color={tmp.engage ? 'primary' : 'danger'} onClick={(e) => {
+                    var newdata = data.getState();
+                    newdata.configs.canbus.config[key].engage ^= true;
+                    data.sock.emit('upstreamConfigs', newdata.configs)
+                  }}>{tmp.engage ? 'Disengage' : 'Engage'}</Button>
                 </div>
               )
             })
@@ -196,7 +200,7 @@ export const ServerView = (props) => {
       <CardColumns>
         <ServerCard data={props.data}/>
         {
-          props.data.verified ?
+          props.data.verified || true?
             <div>
               <CanbusCard data={props.data}/>
               <PowersupplyCard data={props.data}/>

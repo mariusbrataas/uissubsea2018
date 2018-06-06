@@ -176,8 +176,8 @@ class CANclienthandler {
     // Binding client event listeners
     this.client.on('verifyMe', (passwd) => {this.handleVerification(passwd)});
     // Startup routines
-    this.client.volatile.emit('downstreamConfigs', this.topServer.configs)
-    this.client.volatile.emit('loadControllerConfigs', this.controllerconfigs)
+    this.client.emit('downstreamConfigs', this.topServer.configs)
+    this.client.emit('loadControllerConfigs', this.controllerconfigs)
   };
   handleVerification(passwd) {
     if (this.isVerified) {
