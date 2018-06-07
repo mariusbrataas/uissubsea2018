@@ -96,7 +96,7 @@ class App extends Component {
     Object.keys(this.state.contState.controllers).map((key) => {
       if (!(key in indexes)) {delete this.state.contState.controllers[key]}
     })
-    if (this.useDummy) {this.state.contState.controllers[0] = DefaultControllerConfig(0); this.state.contState.controllers[1] = DefaultControllerConfig(1)}
+    //if (this.useDummy) {this.state.contState.controllers[0] = DefaultControllerConfig(0); this.state.contState.controllers[1] = DefaultControllerConfig(1)}
     this.setContState(this.state.contState)
   };
   handleControllerAxis(e) {

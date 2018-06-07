@@ -19,6 +19,7 @@
     "react-side-menu": "^0.1.2",
     "react-simple-range": "^1.6.0",
     "reactstrap": "^5.0.0-beta.3",
+    "sfx": "^0.1.1",
     "socket.io": "^2.1.0"
   },
   "scripts": {

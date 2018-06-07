@@ -125,7 +125,11 @@ export const ControllerSettingsCard = (props) => {
         <CardSubtitle>Controller index: {contData.index}</CardSubtitle>
         <div style={{padding: '20px 0px'}}>
           <Button color={contData.engage ? 'primary' : 'secondary'} onClick={(e) => {
-            props.data.controllers[props.contKey].engage ^= true;
+            if (props.data.controllers[props.contKey].engage) {
+              props.data.controllers[props.contKey].engage = false;
+            } else {
+              props.data.controllers[props.contKey].engage = true;
+            };
             props.data.updateState(props.data)
           }}>{contData.engage ? 'Disengage' : 'Engage'}</Button>
           <hr className="my-2" />
@@ -134,7 +138,11 @@ export const ControllerSettingsCard = (props) => {
             <ButtonDropdown
               isOpen={contData.optionsOpen}
               toggle={() => {
-                props.data.controllers[props.contKey].optionsOpen ^= true;
+                if (props.data.controllers[props.contKey].optionsOpen) {
+                  props.data.controllers[props.contKey].optionsOpen = false;
+                } else {
+                  props.data.controllers[props.contKey].optionsOpen = true;
+                };
                 props.data.updateState(props.data);
               }}
               >
@@ -189,7 +197,11 @@ export const ControllerSettingsCard = (props) => {
                     size='sm'
                     isOpen={contData.axes.designators[designator].isOpen}
                     toggle={() => {
-                      props.data.controllers[props.contKey].axes.designators[designator].isOpen ^= true;
+                      if (props.data.controllers[props.contKey].axes.designators[designator].isOpen) {
+                        props.data.controllers[props.contKey].axes.designators[designator].isOpen = false;
+                      } else {
+                        props.data.controllers[props.contKey].axes.designators[designator].isOpen = true;
+                      };
                       props.data.updateState(props.data);
                     }}
                     >
@@ -211,11 +223,19 @@ export const ControllerSettingsCard = (props) => {
                     </DropdownMenu>
                   </ButtonDropdown>
                   <Button size='sm' color={contData.axes.designators[designator].engage ? 'primary' : 'danger'} onClick={(e) => {
-                    props.data.controllers[props.contKey].axes.designators[designator].engage ^= true;
+                    if (props.data.controllers[props.contKey].axes.designators[designator].engage) {
+                      props.data.controllers[props.contKey].axes.designators[designator].engage = false;
+                    } else {
+                      props.data.controllers[props.contKey].axes.designators[designator].engage = true;
+                    }
                     props.data.updateState(props.data)
                   }}>{contData.axes.designators[designator].engage ? 'Disengage' : 'Engage'}</Button>
                   <Button size='sm' color={contData.axes.designators[designator].reverse ? 'danger' : 'primary'} onClick={(e) => {
-                    props.data.controllers[props.contKey].axes.designators[designator].reverse ^= true;
+                    if (props.data.controllers[props.contKey].axes.designators[designator].reverse) {
+                      props.data.controllers[props.contKey].axes.designators[designator].reverse = false;
+                    } else {
+                      props.data.controllers[props.contKey].axes.designators[designator].reverse = true;
+                    }
                     props.data.updateState(props.data)
                   }}>{contData.axes.designators[designator].reverse ? 'Reversed' : 'Straight'}</Button>
                 </ButtonGroup>
@@ -236,7 +256,11 @@ export const ControllerSettingsCard = (props) => {
                     size='sm'
                     isOpen={contData.buttons.designators[designator].isOpen}
                     toggle={() => {
-                      props.data.controllers[props.contKey].buttons.designators[designator].isOpen ^= true;
+                      if (props.data.controllers[props.contKey].buttons.designators[designator].isOpen) {
+                        props.data.controllers[props.contKey].buttons.designators[designator].isOpen = false;
+                      } else {
+                        props.data.controllers[props.contKey].buttons.designators[designator].isOpen = true;
+                      };
                       props.data.updateState(props.data);
                     }}
                     >
@@ -258,7 +282,11 @@ export const ControllerSettingsCard = (props) => {
                     </DropdownMenu>
                   </ButtonDropdown>
                   <Button size='sm' color={contData.buttons.designators[designator].engage ? 'primary' : 'danger'} onClick={(e) => {
-                    props.data.controllers[props.contKey].buttons.designators[designator].engage ^= true;
+                    if (props.data.controllers[props.contKey].buttons.designators[designator].engage) {
+                      props.data.controllers[props.contKey].buttons.designators[designator].engage = false;
+                    } else {
+                      props.data.controllers[props.contKey].buttons.designators[designator].engage = true;
+                    }
                     props.data.updateState(props.data)
                   }}>{contData.buttons.designators[designator].engage ? 'Disengage' : 'Engage'}</Button>
                 </ButtonGroup>

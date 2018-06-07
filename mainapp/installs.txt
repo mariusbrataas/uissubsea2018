@@ -1,4 +1,0 @@
-npm install react-dropdown  --save
-npm install --save react-sidenav
-npm install --save socket.io
-npm install socketcan

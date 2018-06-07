@@ -2,6 +2,7 @@ import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import {
   Button,
+  ButtonGroup,
   FormGroup,
   Label,
   Input,
@@ -61,14 +62,14 @@ export function DefaultServerConfig(updateState, getState, sock) {
         healthy: false,
         active: false,
         config: {
-          flv: {title:'Front Left Vertical',    id:0, engage:false, status:{}}, // Front Left Vertical
-          frv: {title:'Front Right Vertical',   id:0, engage:false, status:{}}, // Front Right Vertical
-          alv: {title:'Aft Left Vertical',      id:0, engage:false, status:{}}, // Aft Left Vertical
-          arv: {title:'Aft Right Vertical',     id:0, engage:false, status:{}}, // Aft Right Vertical
-          flh: {title:'Front Left Horizontal',  id:0, engage:false, status:{}}, // Front Left Horizontal
-          frh: {title:'Front Right Horizontal', id:0, engage:false, status:{}}, // Front Right Horizontal
-          alh: {title:'Aft Left Horizontal',    id:0, engage:false, status:{}}, // Aft Left Horizontal
-          arh: {title:'Aft Right Horizontal',   id:0, engage:false, status:{}}, // Aft Right Horizontal
+          flv: {title:'Front Left Vertical',    id:0, engage:false, status:{}, reverse:false}, // Front Left Vertical
+          frv: {title:'Front Right Vertical',   id:0, engage:false, status:{}, reverse:false}, // Front Right Vertical
+          alv: {title:'Aft Left Vertical',      id:0, engage:false, status:{}, reverse:false}, // Aft Left Vertical
+          arv: {title:'Aft Right Vertical',     id:0, engage:false, status:{}, reverse:false}, // Aft Right Vertical
+          flh: {title:'Front Left Horizontal',  id:0, engage:false, status:{}, reverse:false}, // Front Left Horizontal
+          frh: {title:'Front Right Horizontal', id:0, engage:false, status:{}, reverse:false}, // Front Right Horizontal
+          alh: {title:'Aft Left Horizontal',    id:0, engage:false, status:{}, reverse:false}, // Aft Left Horizontal
+          arh: {title:'Aft Right Horizontal',   id:0, engage:false, status:{}, reverse:false}, // Aft Right Horizontal
         }
       },
       powersupply: {
@@ -134,7 +135,7 @@ const CanbusCard = (props) => {
       <CardBody>
         <CardTitle>CAN-bus</CardTitle>
         <CardSubtitle>Status: {config.healthy ? (config.active ? 'Active' : 'Healthy') : 'Unhealthy'}</CardSubtitle>
-        <div style={{maxHeight:'50vh', overflow:'scroll'}}>
+        <div style={{maxHeight:'60vh', overflow:'scroll'}}>
           {
             Object.keys(config.config).map((key) => {
               var tmp = config.config[key]
@@ -150,11 +151,26 @@ const CanbusCard = (props) => {
                       </FormGroup>
                     </form>
                   </Nav>
-                  <Button color={tmp.engage ? 'primary' : 'danger'} onClick={(e) => {
-                    var newdata = data.getState();
-                    newdata.configs.canbus.config[key].engage ^= true;
-                    data.sock.emit('upstreamConfigs', newdata.configs)
-                  }}>{tmp.engage ? 'Disengage' : 'Engage'}</Button>
+                  <ButtonGroup>
+                    <Button color={tmp.engage ? 'primary' : 'danger'} onClick={(e) => {
+                      var newdata = data.getState();
+                      if (newdata.configs.canbus.config[key].engage) {
+                        newdata.configs.canbus.config[key].engage = false;
+                      } else {
+                        newdata.configs.canbus.config[key].engage = true;
+                      };
+                      data.sock.emit('upstreamConfigs', newdata.configs)
+                    }}>{tmp.engage ? 'Disengage' : 'Engage'}</Button>
+                    <Button color={tmp.reverse ? 'danger' : 'primary'} onClick={(e) => {
+                      var newdata = data.getState();
+                      if (newdata.configs.canbus.config[key].reverse) {
+                        newdata.configs.canbus.config[key].reverse = false;
+                      } else {
+                        newdata.configs.canbus.config[key].reverse = true;
+                      };
+                      data.sock.emit('upstreamConfigs', newdata.configs)
+                    }}>{tmp.reverse ? 'Reversed' : 'Straight'}</Button>
+                  </ButtonGroup>
                 </div>
               )
             })
@@ -200,7 +216,7 @@ export const ServerView = (props) => {
       <CardColumns>
         <ServerCard data={props.data}/>
         {
-          props.data.verified || true?
+          props.data.verified ?
             <div>
               <CanbusCard data={props.data}/>
               <PowersupplyCard data={props.data}/>

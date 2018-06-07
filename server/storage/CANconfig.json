@@ -1,0 +1,86 @@
+{
+    "flv": {
+        "title": "Front Left Vertical",
+        "id": "D",
+        "engage": true,
+        "status": {},
+        "reverse": false
+    },
+    "frv": {
+        "title": "Front Right Vertical",
+        "id": "15",
+        "engage": true,
+        "status": {},
+        "reverse": false
+    },
+    "alv": {
+        "title": "Aft Left Vertical",
+        "id": "E",
+        "engage": true,
+        "status": {},
+        "reverse": false
+    },
+    "arv": {
+        "title": "Aft Right Vertical",
+        "id": "C",
+        "engage": true,
+        "status": {},
+        "reverse": false
+    },
+    "flh": {
+        "title": "Front Left Horizontal",
+        "id": "14",
+        "engage": true,
+        "status": {},
+        "reverse": false
+    },
+    "frh": {
+        "title": "Front Right Horizontal",
+        "id": "F",
+        "engage": true,
+        "status": {},
+        "reverse": true
+    },
+    "alh": {
+        "title": "Aft Left Horizontal",
+        "id": "12",
+        "engage": true,
+        "status": {},
+        "reverse": false
+    },
+    "arh": {
+        "title": "Aft Right Horizontal",
+        "id": "16",
+        "engage": true,
+        "status": {},
+        "reverse": true
+    },
+    "Mgrab": {
+        "title": "Manipulator grabber",
+        "id": "13",
+        "engage": false,
+        "status": {},
+        "reverse": false
+    },
+    "Mrot": {
+        "title": "Rotate manipulator",
+        "id": "14",
+        "engage": false,
+        "status": {},
+        "reverse": false
+    },
+    "Mtilt": {
+        "title": "Tilt manipulator",
+        "id": "15",
+        "engage": false,
+        "status": {},
+        "reverse": false
+    },
+    "SPARE": {
+        "title": "SPARE",
+        "id": "16",
+        "engage": false,
+        "status": {},
+        "reverse": false
+    }
+}
