@@ -24,13 +24,13 @@ export default function TransferToThrusters(data) {
   const mV = Math.max(Math.abs(flvR), Math.abs(frvR), Math.abs(alvR), Math.abs(arvR), 1);
   const mH = Math.max(Math.abs(flhR), Math.abs(frhR), Math.abs(alhR), Math.abs(arhR), 1);
   return {
-    flv: flvR/mV,    // Front Left Vertical
-    frv: frvR/mV,    // Front Right Vertical
-    alv: alvR/mV,    // Aft Left Vertical
-    arv: arvR/mV,    // Aft Right Vertical
-    flh: flhR/mH,    // Front Left Horizontal
-    frh: -(frhR/mH), // Front Right Horizontal
-    alh: alhR/mH,    // Aft Left Horizontal
-    arh: -(arhR/mH), // Aft Right Horizontal
+    flv: flvR/mV, // Front Left Vertical
+    frv: frvR/mV, // Front Right Vertical
+    alv: alvR/mV, // Aft Left Vertical
+    arv: arvR/mV, // Aft Right Vertical
+    flh: flhR/mH, // Front Left Horizontal
+    frh: frhR/mH, // Front Right Horizontal
+    alh: alhR/mH, // Aft Left Horizontal
+    arh: arhR/mH, // Aft Right Horizontal
   };
 }
