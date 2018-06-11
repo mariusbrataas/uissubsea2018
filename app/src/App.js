@@ -48,7 +48,7 @@ class App extends Component {
     this.sendThrustData = this.sendThrustData.bind(this);
     this.paintThrustData = this.paintThrustData.bind(this);
     // Socket
-    this.sock = openSocket('http://192.168.1.113:8000');
+    this.sock = openSocket('http://192.168.1.92:8000');
     // Game controllers listener
     this.listener = new GamepadListener({analog: true, precision:6});
     // Building state library
@@ -131,7 +131,7 @@ class App extends Component {
             if (designator.current == 'Go up' || designator.current == 'Go down' || designator.current == 'Go left' || designator.current == 'Go right') {
               this.handleControllerAxis(e);
             } else {
-              TranslateToAction(designator.current, config, this.sock);
+              this.sock.emit(designator.current, e.detail.pressed);
             }
           }
         }

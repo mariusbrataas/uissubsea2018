@@ -1,4 +1,6 @@
 var io = require('socket.io');
+var clientIO = require('socket.io-client');
+
 const JSONtools = require('./JSONtools.js');
 
 var networking = require('simple-ifconfig');
@@ -126,9 +128,15 @@ class CANserver {
   constructor(port) {
     // Basic class variables
     this.io = io();
+    this.gpio = clientIO('http://192.168.1.114:8004')
     this.canhandler = new CANhandler(this);
     this.nclients = 0;
     this.port = port;
+    this.camtilt = 0.5;
+    this.campan = 0.5;
+    this.lights = 0;
+    this.sensorRecvAdr = '20';
+    this.sensorSendAdr = '19';
     // Configs
     this.configs = {
       canbus: {
@@ -148,6 +156,8 @@ class CANserver {
     }
     // Binding class methods
     this.handleNewClient = this.handleNewClient.bind(this);
+    this.callForSensordata = this.callForSensordata.bind(this);
+    this.handleSensorData = this.handleSensorData.bind(this);
     // Binding io event listeners
     this.io.on('connection', (client) => {this.handleNewClient(client)});
     // Startup routines
@@ -158,6 +168,18 @@ class CANserver {
     client.on('disconnect', () => {this.nclients--});
     var tmp = new CANclienthandler(client, this);
   }
+  callForSensordata() {
+    this.canhandler.activate = false;
+    this.canhandler.specialMethod = this.handleSensorData;
+    this.canhandler.channel.send({id:this.sensorSendAdr, data:new Buffer([0,0,0,0])});
+  }
+  handleSensorData(tmpid, msg) {
+    if (tmpid == this.sensorRecvAdr) {
+      this.canhandler.activate = true;
+      this.canhandler.specialMethod = null;
+      console.log('Received sensordata')
+    }
+  }
 }
 
 class CANclienthandler {
@@ -166,6 +188,7 @@ class CANclienthandler {
     this.client = client;
     this.topServer = topServer;
     this.canhandler = topServer.canhandler;
+    this.gpio = topServer.gpio;
     this.isVerified = false;
     // Binding class methods
     this.handleVerification = this.handleVerification.bind(this);
@@ -200,6 +223,49 @@ class CANclienthandler {
         this.client.on('pushThrusts', (thrusts) => {
           this.canhandler.sendThrusts(thrusts)
         });
+        // Buttons
+        this.client.on('Lights on', (btnstate) => {if (btnstate) {this.gpio.emit('pin', {pin:7,value:1})}});
+        this.client.on('Lights off', (btnstate) => {if (btnstate) {this.gpio.emit('pin', {pin:7,value:0})}});
+        this.client.on('Toggle lights', (btnstate) => {
+          if (btnstate) {
+            if (this.topServer.lights == 0) {
+              this.topServer.lights = 0
+            } else {
+              this.topServer.lights = 1
+            }
+            this.gpio.emit('pin', {pin:7,value:this.topServer.lights})
+          }
+        });
+        this.client.on('Camera up', (btnstate) => {
+          if (btnstate) {
+            this.topServer.camtilt += 0.1;
+            this.topServer.camtilt = Math.max(Math.min(1,this.topServer.camtilt),0);
+            this.gpio.emit('tilt', this.topServer.camtilt);
+          }
+        });
+        this.client.on('Camera down', (btnstate) => {
+          if (btnstate) {
+            this.topServer.camtilt -= 0.1;
+            this.topServer.camtilt = Math.max(Math.min(1,this.topServer.camtilt),0);
+            this.gpio.emit('tilt', this.topServer.camtilt);
+          }
+        });
+        this.client.on('Camera left', (btnstate) => {
+          if (btnstate) {
+            this.topServer.campan += 0.1;
+            this.topServer.campan = Math.max(Math.min(1,this.topServer.campan),0);
+            this.gpio.emit('pan', this.topServer.campan);
+          }
+        });
+        this.client.on('Camera right', (btnstate) => {
+          if (btnstate) {
+            this.topServer.campan -= 0.1;
+            this.topServer.campan = Math.max(Math.min(1,this.topServer.campan),0);
+            this.gpio.emit('pan', this.topServer.campan);
+          }
+        });
+        // Forwarding other GPIO
+        this.client.on('gpio', (newdata) => {this.gpio.emit(newdata.cmd, newdata.data)})
       } else {
         this.client.volatile.emit('connectionNotVerified');
       };
@@ -218,6 +284,8 @@ class CANhandler {
     this.topServer = topServer;
     this.sendCount = 0;
     this.recvCount = 0;
+    this.activate = true;
+    this.specialMethod = null;
     this.netinfo = new networking.NetworkInfo();
     this.knownAdrs = {}
     this.lastSend = new Date();
@@ -236,20 +304,25 @@ class CANhandler {
     this.netinfo.applySettings('can0', {active:true});
   }
   send(msg) {
-    this.lastSend = new Date();
-    if (this.sendCount > 5000) {
-      console.log('Start bus reset')
-      this.sendCount = 0;
-      this.resetBus()
-      console.log('End bus reset')
+    if (this.activate) {
+      this.lastSend = new Date();
+      if (this.sendCount > 5000) {
+        console.log('Start bus reset')
+        this.sendCount = 0;
+        this.resetBus()
+        console.log('End bus reset')
+      }
+      this.channel.send(msg)
+      var tmp = 0;
     }
-    this.channel.send(msg)
-    var tmp = 0;
   };
   recv(msg) {
     this.recvCount++;
     const tmpid = msg.id.toString(16).substring(1);
     if (!(tmpid in this.knownAdrs)) {this.knownAdrs[tmpid] = parseInt(tmpid, 16)}
+    if (!(this.specialMethod == null)) {
+      this.specialMethod(tmpid, msg)
+    }
   };
   sendThrusts(thrusts) {
     const config = this.topServer.configs.canbus;

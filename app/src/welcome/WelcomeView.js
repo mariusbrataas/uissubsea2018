@@ -2,7 +2,6 @@ import React from 'react';
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Jumbotron, Button } from 'reactstrap';
-import ReactSimpleRange from 'react-simple-range';
 
 import {VerificationBox} from '../server/ServerView.js';
 
@@ -42,7 +41,7 @@ export const WelcomeView = (props) => {
         {
           props.serverdata.verified ?
           <div>
-            <Button outline color="success" onClick={() => {props.navdata.selected='server'; props.navdata.updateState(props.navdata)}}>Server settings</Button>
+            <Button outline color="primary" onClick={() => {props.navdata.selected='server'; props.navdata.updateState(props.navdata)}}>Server settings</Button>
           </div>
           :
           <div style={{maxWidth:'300px'}}>

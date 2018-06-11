@@ -57,6 +57,8 @@ export function DefaultServerConfig(updateState, getState, sock) {
     healthycolor: '#0dee24',
     unhealthycolor: '#ee650d',
     activecolor: '#0d82ee',
+    camtilt: 0.5,
+    campan: 0.5,
     configs: {
       canbus: {
         healthy: false,
@@ -92,7 +94,7 @@ export const VerificationBox = (props) => {
         <Input id="pass" type="password" placeholder="Password" onChange={(e) => {props.data.passwd = e.target.value}}/>
       </FormGroup>
       <FormGroup>
-      <Button outline color="primary">Connect</Button>{' '}
+      <Button outline color="success">Connect</Button>{' '}
       </FormGroup>
     </form>
   )
