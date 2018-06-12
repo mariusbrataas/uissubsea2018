@@ -85,7 +85,7 @@ class App extends Component {
     this.rightX = 0.0;
     this.rightY = 0.0;
     // Socket
-    this.sock = openSocket('http://192.168.1.113:8000');
+    this.sock = openSocket('http://192.168.1.254:8000');
     // Game controllers listener
     this.listener = new GamepadListener({analog: true, precision:6});
     // Building state library

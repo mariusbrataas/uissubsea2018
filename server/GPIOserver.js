@@ -99,7 +99,10 @@ class GpioServer {
   }
   wink() {
     this.gpiohandler.write(this.led1, 1)
-    setTimeout(() => {this.gpiohandler.write(this.led1, 0)}, 1000)
+    this.gpiohandler.write(this.led2, 1)
+    setTimeout(() => {this.gpiohandler.write(this.led1, 0); this.gpiohandler.write(this.led2, 0)}, 1000)
+    setTimeout(() => {this.gpiohandler.write(this.led1, 1); this.gpiohandler.write(this.led2, 1)}, 2000)
+    setTimeout(() => {this.gpiohandler.write(this.led1, 0); this.gpiohandler.write(this.led2, 0)}, 3000)
   }
 }
 
