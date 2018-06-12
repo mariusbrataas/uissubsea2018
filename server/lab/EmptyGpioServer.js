@@ -28,9 +28,14 @@ class GPIOhandler {
     if (!(pin in this.pins)) {
       gpio.setup(pin, gpio.DIR_OUT);
       this.pins[pin] = null;
+      try {gpio.write(pin, value)} catch(err) {}
+      setTimeout(() => {
+        gpio.write(pin, value);
+      }, 250)
+    } else {
+      this.pins[pin] = value;
+      gpio.write(pin, value, () => {})
     }
-    this.pins[pin] = value;
-    gpio.write(pin, value, () => {})
   }
 }
 
@@ -44,8 +49,11 @@ class EmptyGpioServer {
     this.cam = new CAMhandler()
     this.gpiohandler = new GPIOhandler()
     this.configs = {}
+    this.led1 = 7;
+    this.led2 = 29;
     // Binding class methods
     this.handleNewClient = this.handleNewClient.bind(this);
+    this.wink = this.wink.bind(this)
     // Binding io event listeners
     this.io.on('connection', (client) => {this.handleNewClient(client)});
     // Startup routines
@@ -58,6 +66,10 @@ class EmptyGpioServer {
     client.on('disconnect', () => {this.nclients--});
     var tmp = new EmptyGpioClienthandler(client, this);
   }
+  wink() {
+    this.gpiohandler.write(this.led1, 1)
+    setTimeout(() => {this.gpiohandler.write(this.led1, 0)}, 1000)
+  }
 }
 
 class EmptyGpioClienthandler {
@@ -69,7 +81,8 @@ class EmptyGpioClienthandler {
     // Binding client event listeners
     this.client.on('tilt', (value) => {this.cam.tilt(value)})
     this.client.on('pan', (value) => {this.cam.pan(value)})
-    this.client.on('pin', (data) => {this.gpiohandler.write(data.pin, data.value)})
+    this.client.on('pin', (data) => {this.topServer.gpiohandler.write(data.pin, data.value)})
+    this.topServer.wink()
   };
 };
 

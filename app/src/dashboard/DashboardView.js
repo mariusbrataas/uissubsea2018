@@ -1,17 +1,22 @@
-import React from 'react';
+import React, {Component} from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import {
   Card,
-  CardDeck
+  CardDeck,
+  CardBody,
+  CardTitle,
+  Button
 } from 'reactstrap';
 import ReactSimpleRange from 'react-simple-range';
+import JoyStick from 'react-joystick'
 
 import ThrustersLoad from './ThrustersLoad.js';
 
-export function DefaultDashboardConfig(sendThrusts) {
+export function DefaultDashboardConfig(sendThrusts, camPosListener) {
   return {
     title: 'Dashboard',
     subtitle: 'Not finished.',
+    camPosListener: camPosListener,
     loads: {
       flv: 0.0,
       frv: 0.0,
@@ -22,7 +27,7 @@ export function DefaultDashboardConfig(sendThrusts) {
       alh: 0.0,
       arh: 0.0
     },
-    sendThrusts: sendThrusts
+    sendThrusts: sendThrusts,
   }
 };
 
@@ -47,42 +52,32 @@ export const DashboardView = (props) => {
           />
         </Card>
         <Card>
-          <div style={{width:'300px',height:'300px', padding:'10px'}}>
-            <div style={{width:'100%', height:'100%', padding:'50% 0px'}}>
-              <ReactSimpleRange
-                min={0}
-                max={100}
-                label={true}
-                trackColor={'#00abff'}
-                thumbColor={'#004fff'}
-                value={props.serverdata.campan*100}
-                onChange={(data) => {
-                  var serverdata = props.serverdata.getState()
-                  serverdata.campan = data.value/100;
-                  serverdata.updateState(serverdata)
-                  props.serverdata.sock.emit('gpio',{cmd:'pan',data:serverdata.campan})}
-                }/>
-            </div>
-            <div style={{width:'100%', height:'100%', marginTop:'-100%'}}>
-              <ReactSimpleRange
-                min={0}
-                max={100}
-                label={true}
-                trackColor={'#00abff'}
-                thumbColor={'#004fff'}
-                vertical={true}
-                verticalSliderHeight={'100%'}
-                value={props.serverdata.camtilt*100}
-                onChange={(data) => {
-                  var serverdata = props.serverdata.getState()
-                  serverdata.camtilt = data.value/100;
-                  serverdata.updateState(serverdata)
-                  serverdata.sock.emit('gpio',{cmd:'tilt',data:serverdata.camtilt})}
-                }/>
-            </div>
-          </div>
+          <JoyStick
+            options={
+              {
+                mode: 'static',
+                catchDistance: 2,
+                color: 'gray',
+                position: {left: '50%', top: '50%'}
+              }
+            }
+            containerStyle={
+              {
+                position: 'relative',
+                height: '350px',
+                width: '100%',
+              }
+            }
+            managerListener={data.camPosListener} />
         </Card>
         <Card>
+          <CardBody>
+            <CardTitle>Quick access</CardTitle>
+            <Button
+              onClick={() => {props.serverdata.sock.emit('Toggle lights', true)}}
+            >
+            Toggle lights</Button>
+          </CardBody>
         </Card>
       </CardDeck>
     </div>

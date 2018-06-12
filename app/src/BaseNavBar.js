@@ -17,7 +17,7 @@ import {
 export function DefaultNavBarConfig(updateState) {
   return {
     title: 'UiS Subsea 2018',
-    selected: 'welcome',
+    selected: 'dashboard',
     isOpen: false,
     updateState: updateState,
     items: {

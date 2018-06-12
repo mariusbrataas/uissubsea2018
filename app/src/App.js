@@ -47,15 +47,16 @@ class App extends Component {
     this.handleControllerButton = this.handleControllerButton.bind(this);
     this.sendThrustData = this.sendThrustData.bind(this);
     this.paintThrustData = this.paintThrustData.bind(this);
+    this.camPosListener = this.camPosListener.bind(this);
     // Socket
-    this.sock = openSocket('http://192.168.1.92:8000');
+    this.sock = openSocket('http://192.168.1.113:8000');
     // Game controllers listener
     this.listener = new GamepadListener({analog: true, precision:6});
     // Building state library
     this.state = {
       navState:               DefaultNavBarConfig(this.setNavState, this.getNavState),
       welcomeState:           DefaultWelcomeConfig(this.setWelcomeState, this.getWelcomeState),
-      dashState:              DefaultDashboardConfig(this.sendThrustData),
+      dashState:              DefaultDashboardConfig(this.sendThrustData, this.camPosListener),
       contState:              DefaultControllersConfig(this.setContState, this.getContState, this.sock),
       serverState:            DefaultServerConfig(this.setServerState, this.getServerState, this.sock),
       frontcenterState:       DefaultFrontcenterConfig(),
@@ -137,6 +138,18 @@ class App extends Component {
         }
       }
     }
+  }
+  // Joystick emulators
+  camPosListener(manager) {
+      manager.on('move', (e, stick) => {
+          const x = 0.5+Math.max(-1, Math.min(1, (1/4)*Math.cos(stick.angle.radian)*stick.force))/2
+          const y = 0.5+Math.max(-1, Math.min(1, (1/4)*Math.sin(stick.angle.radian)*stick.force))/2
+          this.state.serverState.campan = x;
+          this.state.serverState.camtilt = y;
+          this.setServerState(this.state.serverState)
+          this.sock.emit('gpio',{cmd:'pan',data:this.state.serverState.campan})
+          this.sock.emit('gpio',{cmd:'tilt',data:this.state.serverState.camtilt})
+      })
   }
   // State setters
   setContState(contState) {this.setState({contState})};
