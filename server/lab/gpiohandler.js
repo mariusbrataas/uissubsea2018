@@ -9,7 +9,7 @@ class GPIOhandler {
     if (!(pin in this.pins)) {
       gpio.setup(pin, gpio.DIR_OUT);
       this.pins[pin] = null;
-      try {gpio.write(pin, 0)} catch(err) {}
+      try {gpio.write(pin, value)} catch(err) {}
       setTimeout(() => {
         gpio.write(pin, value);
       }, 250)

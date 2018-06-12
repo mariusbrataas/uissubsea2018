@@ -68,7 +68,7 @@ export const DashboardView = (props) => {
             options={
               {
                 mode: 'static',
-                catchDistance: 4,
+                catchDistance: 1000,
                 color: 'gray',
                 position: {left: '50%', top: '50%'}
               }

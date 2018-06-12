@@ -8,7 +8,7 @@
     },
     "frv": {
         "title": "Front Right Vertical",
-        "id": "15",
+        "id": "B",
         "engage": true,
         "status": {},
         "reverse": false
@@ -29,7 +29,7 @@
     },
     "flh": {
         "title": "Front Left Horizontal",
-        "id": "14",
+        "id": "11",
         "engage": true,
         "status": {},
         "reverse": false
@@ -50,7 +50,7 @@
     },
     "arh": {
         "title": "Aft Right Horizontal",
-        "id": "16",
+        "id": "10",
         "engage": true,
         "status": {},
         "reverse": true

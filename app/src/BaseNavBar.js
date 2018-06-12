@@ -48,8 +48,7 @@ export function DefaultNavBarConfig(updateState) {
       frontcenter:  {value:'Front center cam'},
       frontleft:    {value:'Left cam'},
       frontright:   {value:'Right cam'},
-      aft:          {value:'Aft cam'},
-      touchstick:   {value:'Screen controller'}
+      aft:          {value:'Aft cam'}
     },
     tinyviewsOpen: false,
     stopWatch: {
