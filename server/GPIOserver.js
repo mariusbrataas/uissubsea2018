@@ -3,6 +3,7 @@ var io = require('socket.io');
 var gpio = require('rpi-gpio');
 const raspi = require('raspi');
 const pwm = require('raspi-pwm');
+const JSONtools = require('./JSONtools.js');
 
 /*
 CONTENTS
@@ -17,14 +18,7 @@ CONTENTS
 */
 
 // Settings
-const GPIOdesignations = {
-  tilt: 'GPIO12', // Pin 32
-  pan: 'GPIO19', // Pin 35
-  led1: 7, // GPIO4
-  led2: 29, // GPIO5
-  alex: 26,
-  nico: 12,
-}
+const GPIOdesignations = JSONtools.LoadConfig('GPIOdesignations');
 
 // Helper: CAMhandler
 class CAMhandler {

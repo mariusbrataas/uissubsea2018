@@ -7,6 +7,8 @@ const JSONtools = require('./JSONtools.js');
 
 /*
 CONTENTS
+- Settings
+  - GPIOdesignations
 - Helper
   - AddControllerConfig
   - simpleCAN (used for testing)
@@ -21,6 +23,9 @@ CONTENTS
 - Main class
   - CANserver
 */
+
+// Settings
+const GPIOdesignations = JSONtools.LoadConfig('GPIOdesignations');
 
 // Helper: AddControllerConfig
 function AddControllerConfig(title, config) {
@@ -186,16 +191,37 @@ class CANclienthandler {
           this.canhandler.sendThrusts(thrusts)
         });
         // Buttons
-        this.client.on('Lights on', (btnstate) => {if (btnstate) {this.gpio.emit('pin', {pin:7,value:1})}});
-        this.client.on('Lights off', (btnstate) => {if (btnstate) {this.gpio.emit('pin', {pin:7,value:0})}});
+        this.client.on('Lights on', (btnstate) => {
+          if (btnstate) {
+            this.gpio.emit('pin', {pin:GPIOdesignations.led1, value:1});
+            this.gpio.emit('pin', {pin:GPIOdesignations.led2, value:1});
+          }
+        });
+        this.client.on('Lights off', (btnstate) => {
+          if (btnstate) {
+            this.gpio.emit('pin', {pin:GPIOdesignations.led1, value:0});
+            this.gpio.emit('pin', {pin:GPIOdesignations.led2, value:0});
+          }
+        });
         this.client.on('Toggle lights', (btnstate) => {
           if (btnstate) {
             if (this.topServer.lights == 0) {
-              this.topServer.lights = 0
+              this.topServer.lights = 1;
             } else {
-              this.topServer.lights = 1
+              this.topServer.lights = 0;
             }
-            this.gpio.emit('pin', {pin:7,value:this.topServer.lights})
+            this.gpio.emit('pin', {pin:GPIOdesignations.led1, value:this.topServer.lights});
+            this.gpio.emit('pin', {pin:GPIOdesignations.led1, value:this.topServer.lights});
+          }
+        });
+        this.client.on('Toggle Alex', (btnstate) => {
+          if (btnstate) {
+            if (this.topServer.alexpin == 0) {
+              this.topServer.alexpin = 1;
+            } else {
+              this.topServer.alexpin = 0;
+            }
+            this.gpio.emit('pin', {pin:GPIOdesignations.alex, value:this.topServer.alexpin});
           }
         });
         this.client.on('Camera up', (btnstate) => {
@@ -308,6 +334,7 @@ class CANserver {
     this.camtilt = 0.5;
     this.campan = 0.5;
     this.lights = 0;
+    this.alexpin = 0;
     this.sensorRecvAdr = '20';
     this.sensorSendAdr = '19';
     // Configs

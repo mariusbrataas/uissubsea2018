@@ -1,0 +1,8 @@
+{
+  "tilt": "GPIO12",
+  "pan": "GPIO19",
+  "led1": 7,
+  "led2": 29,
+  "alex": 26,
+  "nico": 12
+}

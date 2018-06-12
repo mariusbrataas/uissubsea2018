@@ -61,20 +61,20 @@ export const DashboardView = (props) => {
             arh={loads.arh}
           />
         </Card>
-        <Card>
+        <Card style={{minHeight:'60vh'}}>
           <JoyStick
             options={
               {
                 mode: 'static',
-                catchDistance: 2,
+                catchDistance: 4,
                 color: 'gray',
                 position: {left: '50%', top: '50%'}
               }
             }
             containerStyle={
               {
-                position: 'relative',
-                height: '350px',
+                position: 'absolute',
+                height: '100%',
                 width: '100%',
               }
             }
@@ -83,10 +83,16 @@ export const DashboardView = (props) => {
         <Card>
           <CardBody>
             <CardTitle>Quick access</CardTitle>
-            <Button
-              onClick={() => {props.serverdata.sock.emit('Toggle lights', true)}}
-            >
-            Toggle lights</Button>
+            <div style={{padding:'2px 2px'}}>
+              <Button
+                onClick={() => {props.serverdata.sock.emit('Toggle lights', true)}}
+              >Toggle lights</Button>
+            </div>
+            <div style={{padding:'2px 2px'}}>
+              <Button
+                onClick={() => {props.serverdata.sock.emit('Toggle Alex', true)}}
+              >Toggle Alex</Button>
+            </div>
           </CardBody>
         </Card>
       </CardDeck>
