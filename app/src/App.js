@@ -12,6 +12,7 @@ import {WelcomeView, DefaultWelcomeConfig} from './welcome/WelcomeView.js';
 import {DashboardView, DefaultDashboardConfig} from './dashboard/DashboardView.js';
 import {ControllersView, DefaultControllersConfig, DefaultControllerConfig, ControllersBindSocketListeners} from './controllers/ControllersView.js';
 import {ServerView, DefaultServerConfig, ServerBindSocketListeners} from './server/ServerView.js';
+import {TouchStickView} from './touchstick/TouchStick.js';
 
 // Camera view handlers
 import {FrontcenterView, DefaultFrontcenterConfig} from './cameras/FrontcenterView.js';
@@ -75,6 +76,14 @@ class App extends Component {
     this.sendThrustData = this.sendThrustData.bind(this);
     this.paintThrustData = this.paintThrustData.bind(this);
     this.camPosListener = this.camPosListener.bind(this);
+    this.leftStickListener = this.leftStickListener.bind(this);
+    this.rightStickListener = this.rightStickListener.bind(this);
+    this.calcVirtualThrust = this.calcVirtualThrust.bind(this);
+    // Stick variables
+    this.leftX = 0.0;
+    this.leftY = 0.0;
+    this.rightX = 0.0;
+    this.rightY = 0.0;
     // Socket
     this.sock = openSocket('http://192.168.1.113:8000');
     // Game controllers listener
@@ -83,7 +92,7 @@ class App extends Component {
     this.state = {
       navState:               DefaultNavBarConfig(this.setNavState, this.getNavState),
       welcomeState:           DefaultWelcomeConfig(this.setWelcomeState, this.getWelcomeState),
-      dashState:              DefaultDashboardConfig(this.sendThrustData, this.camPosListener),
+      dashState:              DefaultDashboardConfig(this.sendThrustData, this.camPosListener, this.leftStickListener, this.rightStickListener),
       contState:              DefaultControllersConfig(this.setContState, this.getContState, this.sock),
       serverState:            DefaultServerConfig(this.setServerState, this.getServerState, this.sock),
       frontcenterState:       DefaultFrontcenterConfig(),
@@ -171,6 +180,44 @@ class App extends Component {
       this.sock.emit('gpio',{cmd:'tilt',data:this.state.serverState.camtilt})
     })
   }
+  leftStickListener(manager) {
+    manager.on('move', (e, stick) => {
+      this.leftX = Math.max(-1, Math.min(1, (1/2)*Math.cos(stick.angle.radian)*stick.force));
+      this.leftY = Math.max(-1, Math.min(1, (1/2)*Math.sin(stick.angle.radian)*stick.force));
+      const transfers = TransferToThrusters(this.calcVirtualThrust());
+      this.sendThrustData(transfers);
+    })
+    manager.on('end', (e, stick) => {
+      this.leftX = 0.0;
+      this.leftY = 0.0;
+      const transfers = TransferToThrusters(this.calcVirtualThrust());
+      this.sendThrustData(transfers);
+    })
+  }
+  rightStickListener(manager) {
+    manager.on('move', (e, stick) => {
+      this.rightX = Math.max(-1, Math.min(1, (1/2)*Math.cos(stick.angle.radian)*stick.force));
+      this.rightY = Math.max(-1, Math.min(1, (1/2)*Math.sin(stick.angle.radian)*stick.force));
+      const transfers = TransferToThrusters(this.calcVirtualThrust());
+      this.sendThrustData(transfers);
+    })
+    manager.on('end', (e, stick) => {
+      this.rightX = 0.0;
+      this.rightY = 0.0;
+      const transfers = TransferToThrusters(this.calcVirtualThrust());
+      this.sendThrustData(transfers);
+    })
+  }
+  calcVirtualThrust() {
+    return {
+      ROLL: this.leftX,
+      PITCH: this.leftY,
+      LAT: this.rightX,
+      LONG: this.rightY,
+      VERT: 0.0,
+      YAW: 0.0,
+    }
+  }
   // State setters
   setContState(contState) {this.setState({contState})};
   setNavState(navState) {this.setState({navState})};
@@ -192,6 +239,7 @@ class App extends Component {
       case 'frontleft':         return <ViewRenderer navState={this.state.navState} serverdata={this.state.serverState} viewhandler={FrontleftView} data={this.state.frontleftState}/>
       case 'frontright':        return <ViewRenderer navState={this.state.navState} serverdata={this.state.serverState} viewhandler={FrontrightView} data={this.state.frontrightState}/>
       case 'aft':               return <ViewRenderer navState={this.state.navState} serverdata={this.state.serverState} viewhandler={AftView} data={this.state.aftState}/>
+      case 'touchstick':        return <ViewRenderer navState={this.state.navState} serverdata={this.state.serverState} viewhandler={TouchStickView} data={this.state.dashState}/>
       default: return <ViewRenderer navState={this.state.navState} viewhandler={DefaultViewHandler}/>
     }
   }

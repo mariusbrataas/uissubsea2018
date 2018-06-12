@@ -44,13 +44,14 @@ export function DefaultNavBarConfig(updateState) {
       dashboard:  {value:'Dashboard'},
     },
     settingsOpen: false,
-    cameraItems: {
-      frontcenter:  {value:'Front center'},
-      frontleft:    {value:'Front left'},
-      frontright:   {value:'Front right'},
-      aft:          {value:'Aft'}
+    tinyviewsItems: {
+      frontcenter:  {value:'Front center cam'},
+      frontleft:    {value:'Left cam'},
+      frontright:   {value:'Right cam'},
+      aft:          {value:'Aft cam'},
+      touchstick:   {value:'Screen controller'}
     },
-    camerasOpen: false,
+    tinyviewsOpen: false,
     stopWatch: {
       intervalRef: null,
       seconds: null,
@@ -71,7 +72,7 @@ export class BaseNavBar extends Component {
     this.serverdata = props.serverdata;
   };
   toggle() {this.setState({isOpen: !this.state.isOpen})}
-  camerasToggle() {this.setState({camerasOpen: !this.state.camerasOpen})}
+  camerasToggle() {this.setState({tinyviewsOpen: !this.state.tinyviewsOpen})}
   handleStartStopwatch() {
     if (!this.state.stopWatch.isActive) {
       var m = '';
@@ -108,13 +109,13 @@ export class BaseNavBar extends Component {
                 >Dashboard</Button>
               </div>
               <div style={{padding:'2px 0px'}}>
-                <ButtonDropdown isOpen={this.state.camerasOpen} toggle={this.camerasToggle} style={{padding:'0px 2px'}}>
+                <ButtonDropdown isOpen={this.state.tinyviewsOpen} toggle={this.camerasToggle} style={{padding:'0px 2px'}}>
                   <DropdownToggle outline caret color="primary">
-                    Cameras
+                    Displays
                   </DropdownToggle>
                   <DropdownMenu right>
                     {
-                      Object.keys(this.state.cameraItems).map((key) => {
+                      Object.keys(this.state.tinyviewsItems).map((key) => {
                         return (
                           <DropdownItem
                             onClick={() => {
@@ -122,7 +123,7 @@ export class BaseNavBar extends Component {
                               this.state.isOpen = false;
                               this.state.updateState(this.state);
                             }}
-                          >{this.state.cameraItems[key].value}</DropdownItem>
+                          >{this.state.tinyviewsItems[key].value}</DropdownItem>
                         )
                       })
                     }

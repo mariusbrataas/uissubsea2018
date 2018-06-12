@@ -21,11 +21,13 @@ CONTENTS
 */
 
 // Helper: DefaultDashboardConfig
-export function DefaultDashboardConfig(sendThrusts, camPosListener) {
+export function DefaultDashboardConfig(sendThrusts, camPosListener, leftStickListener, rightStickListener) {
   return {
     title: 'Dashboard',
     subtitle: 'Not finished.',
     camPosListener: camPosListener,
+    leftStickListener: leftStickListener,
+    rightStickListener: rightStickListener,
     loads: {
       flv: 0.0,
       frv: 0.0,
