@@ -121,7 +121,6 @@ export class BaseNavBar extends Component {
                               this.state.selected = key;
                               this.state.isOpen = false;
                               this.state.updateState(this.state);
-                              this.toggle()
                             }}
                           >{this.state.cameraItems[key].value}</DropdownItem>
                         )
@@ -137,7 +136,6 @@ export class BaseNavBar extends Component {
                   onClick={() => {
                     this.state.selected = 'controllers';
                     this.state.updateState(this.state);
-                    this.toggle()
                   }}
                 >Controller settings</Button>
               </div>
@@ -150,7 +148,6 @@ export class BaseNavBar extends Component {
                   onClick={() => {
                     this.state.selected = 'server';
                     this.state.updateState(this.state);
-                    this.toggle()
                   }}
                 >Server settings</Button>
               </div>
@@ -162,7 +159,6 @@ export class BaseNavBar extends Component {
                       color='danger'
                       onClick={() => {
                         console.log('Emergency stop')
-                        this.toggle()
                       }}
                     >Emergency stop</Button>
                   </div>
