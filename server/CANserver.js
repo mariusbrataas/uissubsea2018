@@ -1,17 +1,35 @@
+// Importing dependencies
 var io = require('socket.io');
 var clientIO = require('socket.io-client');
-
-const JSONtools = require('./JSONtools.js');
-
 var networking = require('simple-ifconfig');
 var can = require('socketcan');
+const JSONtools = require('./JSONtools.js');
 
+/*
+CONTENTS
+- Helper
+  - AddControllerConfig
+  - simpleCAN (used for testing)
+  - Translate motor commands
+    - CMD to ID library
+    - Decimal to hex with support for negative numbers
+    - ID to CMD library
+    - Command scaling library
+    - Function to prep full message
+  - CANclienthandler
+  - CANhandler
+- Main class
+  - CANserver
+*/
+
+// Helper: AddControllerConfig
 function AddControllerConfig(title, config) {
   var configs = JSONtools.LoadConfig('controllerconfigs');
   configs[title] = config;
   JSONtools.SaveConfig('controllerconfigs', configs);
 }
 
+// Helper: simpleCAN (used for testing)
 class simpleCAN {
   constructor() {
     // Basic settings
@@ -75,7 +93,8 @@ class simpleCAN {
   }
 }
 
-// Helpers for com with motorcontrollers
+// Helper: Translate motor commands
+// CMD to ID library
 const cmd2adr = {
   'set_duty':             '00',
   'set_current':          '01',
@@ -89,20 +108,19 @@ const cmd2adr = {
   'packet_status':        '09'
 };
 
-function decimalToHexString(number)
-{
-    if (number < 0)
-    {
-        number = 0xFFFFFFFF + number + 1;
-    }
-
-    var val = number.toString(16).toUpperCase();
-    return val
+// Decimal to hex with support for negative numbers
+function decimalToHexString(number) {
+  if (number < 0)
+  {number = 0xFFFFFFFF + number + 1;}
+  var val = number.toString(16).toUpperCase();
+  return val
 }
 
+// ID to CMD library
 var adr2cmd = {};
 Object.keys(cmd2adr).map((cmd) => {adr2cmd[cmd2adr[cmd]] = cmd});
 
+// Command scaling library
 const scaling = {
   'set_duty':100000,
   'set_current':1000,
@@ -111,6 +129,7 @@ const scaling = {
   'set_pos':1000000
 }
 
+// Function to prep full message
 function prepMotorMsg(id, cmd, value) {
   var addr = parseInt((cmd2adr[cmd]).concat(id), 16);
   var data = decimalToHexString(Math.round(value*scaling[cmd]))
@@ -124,64 +143,7 @@ function prepMotorMsg(id, cmd, value) {
   return msg
 };
 
-class CANserver {
-  constructor(port) {
-    // Basic class variables
-    this.io = io();
-    this.gpio = clientIO('http://192.168.1.114:8004')
-    this.canhandler = new CANhandler(this);
-    this.nclients = 0;
-    this.port = port;
-    this.camtilt = 0.5;
-    this.campan = 0.5;
-    this.lights = 0;
-    this.sensorRecvAdr = '20';
-    this.sensorSendAdr = '19';
-    // Configs
-    this.configs = {
-      canbus: {
-        healthy: true,
-        active: false,
-        thrustChanger: 'set_duty',
-        config: JSONtools.LoadConfig('CANconfig')
-      },
-      powersupply: {
-        healthy: false,
-        active: false
-      },
-      sensors: {
-        healthy: false,
-        active: false
-      }
-    }
-    // Binding class methods
-    this.handleNewClient = this.handleNewClient.bind(this);
-    this.callForSensordata = this.callForSensordata.bind(this);
-    this.handleSensorData = this.handleSensorData.bind(this);
-    // Binding io event listeners
-    this.io.on('connection', (client) => {this.handleNewClient(client)});
-    // Startup routines
-    this.io.listen(port)
-  };
-  handleNewClient(client) {
-    this.nclients++;
-    client.on('disconnect', () => {this.nclients--});
-    var tmp = new CANclienthandler(client, this);
-  }
-  callForSensordata() {
-    this.canhandler.activate = false;
-    this.canhandler.specialMethod = this.handleSensorData;
-    this.canhandler.channel.send({id:this.sensorSendAdr, data:new Buffer([0,0,0,0])});
-  }
-  handleSensorData(tmpid, msg) {
-    if (tmpid == this.sensorRecvAdr) {
-      this.canhandler.activate = true;
-      this.canhandler.specialMethod = null;
-      console.log('Received sensordata')
-    }
-  }
-}
-
+// Helper: CANclienthandler
 class CANclienthandler {
   constructor(client, topServer) {
     // Basic class variables
@@ -273,10 +235,7 @@ class CANclienthandler {
   };
 };
 
-
-
-
-
+// Helper: CANhandler
 class CANhandler {
   constructor(topServer) {
     // Basic settings
@@ -334,6 +293,65 @@ class CANhandler {
         this.send(msg)
       }
     })
+  }
+}
+
+// Main class
+class CANserver {
+  constructor(port) {
+    // Basic class variables
+    this.io = io();
+    this.gpio = clientIO('http://192.168.1.114:8004')
+    this.canhandler = new CANhandler(this);
+    this.nclients = 0;
+    this.port = port;
+    this.camtilt = 0.5;
+    this.campan = 0.5;
+    this.lights = 0;
+    this.sensorRecvAdr = '20';
+    this.sensorSendAdr = '19';
+    // Configs
+    this.configs = {
+      canbus: {
+        healthy: true,
+        active: false,
+        thrustChanger: 'set_duty',
+        config: JSONtools.LoadConfig('CANconfig')
+      },
+      powersupply: {
+        healthy: false,
+        active: false
+      },
+      sensors: {
+        healthy: false,
+        active: false
+      }
+    }
+    // Binding class methods
+    this.handleNewClient = this.handleNewClient.bind(this);
+    this.callForSensordata = this.callForSensordata.bind(this);
+    this.handleSensorData = this.handleSensorData.bind(this);
+    // Binding io event listeners
+    this.io.on('connection', (client) => {this.handleNewClient(client)});
+    // Startup routines
+    this.io.listen(port)
+  };
+  handleNewClient(client) {
+    this.nclients++;
+    client.on('disconnect', () => {this.nclients--});
+    var tmp = new CANclienthandler(client, this);
+  }
+  callForSensordata() {
+    this.canhandler.activate = false;
+    this.canhandler.specialMethod = this.handleSensorData;
+    this.canhandler.channel.send({id:this.sensorSendAdr, data:new Buffer([0,0,0,0])});
+  }
+  handleSensorData(tmpid, msg) {
+    if (tmpid == this.sensorRecvAdr) {
+      this.canhandler.activate = true;
+      this.canhandler.specialMethod = null;
+      console.log('Received sensordata')
+    }
   }
 }
 

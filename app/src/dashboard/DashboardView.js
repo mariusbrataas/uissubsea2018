@@ -1,3 +1,4 @@
+// Importing dependencies
 import React, {Component} from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import {
@@ -9,9 +10,17 @@ import {
 } from 'reactstrap';
 import ReactSimpleRange from 'react-simple-range';
 import JoyStick from 'react-joystick'
-
 import ThrustersLoad from './ThrustersLoad.js';
 
+/*
+CONTENTS
+- Helper
+  - DefaultDashboardConfig
+- Main export
+  - DashboardView
+*/
+
+// Helper: DefaultDashboardConfig
 export function DefaultDashboardConfig(sendThrusts, camPosListener) {
   return {
     title: 'Dashboard',
@@ -31,6 +40,7 @@ export function DefaultDashboardConfig(sendThrusts, camPosListener) {
   }
 };
 
+// Main export: DashboardView
 export const DashboardView = (props) => {
   const data = props.data;
   const loads = props.data.loads;

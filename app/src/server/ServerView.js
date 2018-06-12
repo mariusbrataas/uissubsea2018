@@ -1,3 +1,4 @@
+// Importing dependencies
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import {
@@ -15,6 +16,22 @@ import {
   Nav
 } from 'reactstrap';
 
+/*
+CONTENTS
+- Helper
+  - ServerBindSocketListeners
+  - DefaultServerConfig
+  - VerificationBox
+- Card
+  - ServerCard
+  - CanbusCard
+  - PowersupplyCard
+  - SensorsCard
+- Main export
+  - ServerView
+*/
+
+// Helper: ServerBindSocketListeners
 export function ServerBindSocketListeners(data) {
   data.sock.on('connectionVerified', () => {
     data = data.getState();
@@ -45,6 +62,7 @@ export function ServerBindSocketListeners(data) {
   })
 }
 
+// Helper: DefaultServerConfig
 export function DefaultServerConfig(updateState, getState, sock) {
   return {
     updateState: updateState,
@@ -86,6 +104,7 @@ export function DefaultServerConfig(updateState, getState, sock) {
   }
 };
 
+// Helper: VerificationBox
 export const VerificationBox = (props) => {
   return (
     <form onSubmit={(e) => {e.preventDefault(); props.data.updateState(props.data); props.data.sock.emit('verifyMe', props.data.passwd)}}>
@@ -100,6 +119,7 @@ export const VerificationBox = (props) => {
   )
 }
 
+// Card: ServerCard
 const ServerCard = (props) => {
   var data = props.data;
   return (
@@ -129,6 +149,7 @@ const ServerCard = (props) => {
   )
 }
 
+// Card: CanbusCard
 const CanbusCard = (props) => {
   const data = props.data;
   const config = data.configs.canbus;
@@ -183,6 +204,7 @@ const CanbusCard = (props) => {
   )
 }
 
+// Card: PowersupplyCard
 const PowersupplyCard = (props) => {
   const data = props.data;
   const config = data.configs.powersupply;
@@ -197,6 +219,7 @@ const PowersupplyCard = (props) => {
   )
 }
 
+// Card: SensorsCard
 const SensorsCard = (props) => {
   const data = props.data;
   const config = data.configs.sensors;
@@ -211,6 +234,7 @@ const SensorsCard = (props) => {
   )
 }
 
+// Main export: ServerView
 export const ServerView = (props) => {
   return (
     <div style={{padding:'20px'}}>

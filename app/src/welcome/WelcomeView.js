@@ -1,10 +1,19 @@
+// Importing dependencies
 import React from 'react';
 import '../App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import { Jumbotron, Button } from 'reactstrap';
-
 import {VerificationBox} from '../server/ServerView.js';
 
+/*
+CONTENTS
+- Helper
+  - DefaultWelcomeConfig
+- Main export
+  - WelcomeView
+*/
+
+// Helper: DefaultWelcomeConfig
 export function DefaultWelcomeConfig(updateState, getState) {
   return {
     updateState: updateState,
@@ -22,6 +31,7 @@ export function DefaultWelcomeConfig(updateState, getState) {
   }
 };
 
+// Main export: WelcomeView
 export const WelcomeView = (props) => {
   const data = props.data;
   return (

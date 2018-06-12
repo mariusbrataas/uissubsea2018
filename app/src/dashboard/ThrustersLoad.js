@@ -1,9 +1,20 @@
+// Importing dependencies
 import React from 'react';
 import '../App.css';
-
 import CircularProgressbar from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
+/*
+CONTENTS
+- Helper
+  - calcColors
+  - CircleLoad
+  - testThrust
+- Main export
+  - ThrustersLoad
+*/
+
+// Helper: calcColors
 function calcColors(percentage) {
   if (percentage == 0) {return 'rgba(0,100,100,1)'}
   const f = Math.pow(Math.abs(percentage), 1/2);
@@ -13,6 +24,7 @@ function calcColors(percentage) {
   return `rgba(${r},${g},${b},1)`
 }
 
+// Helper: CircleLoad
 const CircleLoad = (props) => {
   const loadColor = calcColors(props.percentage);
   return(
@@ -32,6 +44,7 @@ const CircleLoad = (props) => {
   )
 }
 
+// Helper: testThrust
 function testThrust(sendThrusts, thruster) {
   var thrusts = {
     flv:0,
@@ -51,6 +64,7 @@ function testThrust(sendThrusts, thruster) {
   }, 300)
 }
 
+// Main export: ThrustersLoad
 export const ThrustersLoad = (props) => {
   return (
     <div>

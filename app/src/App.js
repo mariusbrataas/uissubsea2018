@@ -24,14 +24,41 @@ import {TranslateXboxAxis, index2XboxBtn, index2XboxAxis} from './controllers/Tr
 import TransferToThrusters from './controllers/TransferToThrusters.js';
 import TranslateToAction from './controllers/TranslateToAction.js';
 
-var bonjour = require('bonjour')
+/*
+CONTENTS
+- Main class: App
+  - constructor
+  - Basic thrust helpers
+    - sendThrustData
+    - paintThrustData
+  - Gamepad helpers
+    - lookForControllers
+    - handleControllerAxis
+    - handleControllerButton
+  - Joystick emulators
+    - camPosListener
+  - State setters
+    - setContState
+    - setNavState
+    - setServerState
+    - setWelcomeState
+  - State getters
+    - getContState
+    - getNavState
+    - getServerState
+    - getWelcomeState
+  - render
+- Helper
+  - DefaultViewHandler
+  - ViewRenderer
+*/
 
+// Main class
 class App extends Component {
   constructor(props) {
     // Basic settings
     super(props);
     this.useDummy = true;
-    this.contReady = true;
     this.lastSend = new Date();
     // Binding class methods
     this.setNavState = this.setNavState.bind(this);
@@ -65,7 +92,6 @@ class App extends Component {
       aftState:               DefaultAftConfig(),
     };
     // Binding socket event handlers
-    this.sock.on('confirmThrusts', (e) => {this.contReady = true});
     this.sock.on('paintThrusts', (thrusts) => {this.paintThrustData(thrusts)})
     ServerBindSocketListeners(this.state.serverState);
     ControllersBindSocketListeners(this.state.contState);
@@ -78,9 +104,16 @@ class App extends Component {
     this.listener.start();
     this.lookForControllers();
     window.addEventListener('load', this.lookForControllers);
-    this.contInterval = setInterval(() => {
-      this.contReady = true;
-    }, 1000)
+  };
+  // Basic thrust helpers
+  sendThrustData(thrusts) {
+    this.paintThrustData(thrusts)
+    this.sock.emit('pushThrusts', thrusts)
+  };
+  paintThrustData(thrusts) {
+    const dashState = this.state.dashState;
+    dashState.loads = thrusts;
+    this.setState({dashState});
   };
   // Gamepad helpers
   lookForControllers() {
@@ -97,11 +130,9 @@ class App extends Component {
     Object.keys(this.state.contState.controllers).map((key) => {
       if (!(key in indexes)) {delete this.state.contState.controllers[key]}
     })
-    //if (this.useDummy) {this.state.contState.controllers[0] = DefaultControllerConfig(0); this.state.contState.controllers[1] = DefaultControllerConfig(1)}
     this.setContState(this.state.contState)
   };
   handleControllerAxis(e) {
-    // event -> smooth data -> choose controller config -> assign data based on config -> translate to normalized -> transform to thruster power
     const config = this.state.contState.controllers[e.detail.gamepad.index];
     if (config) {
       if (config.engage) {
@@ -110,15 +141,6 @@ class App extends Component {
         this.sendThrustData(transfers)
       }
     }
-  };
-  sendThrustData(thrusts) {
-    this.paintThrustData(thrusts)
-    this.sock.emit('pushThrusts', thrusts)
-  };
-  paintThrustData(thrusts) {
-    const dashState = this.state.dashState;
-    dashState.loads = thrusts;
-    this.setState({dashState});
   };
   handleControllerButton(e) {
     const config = this.state.contState.controllers[e.detail.gamepad.index];
@@ -141,25 +163,25 @@ class App extends Component {
   }
   // Joystick emulators
   camPosListener(manager) {
-      manager.on('move', (e, stick) => {
-          const x = 0.5+Math.max(-1, Math.min(1, (1/4)*Math.cos(stick.angle.radian)*stick.force))/2
-          const y = 0.5+Math.max(-1, Math.min(1, (1/4)*Math.sin(stick.angle.radian)*stick.force))/2
-          this.state.serverState.campan = x;
-          this.state.serverState.camtilt = y;
-          this.setServerState(this.state.serverState)
-          this.sock.emit('gpio',{cmd:'pan',data:this.state.serverState.campan})
-          this.sock.emit('gpio',{cmd:'tilt',data:this.state.serverState.camtilt})
-      })
+    manager.on('move', (e, stick) => {
+      this.state.serverState.campan = 0.5+Math.max(-1, Math.min(1, (1/4)*Math.cos(stick.angle.radian)*stick.force))/2;
+      this.state.serverState.camtilt = 0.5+Math.max(-1, Math.min(1, (1/4)*Math.sin(stick.angle.radian)*stick.force))/2;
+      this.setServerState(this.state.serverState)
+      this.sock.emit('gpio',{cmd:'pan',data:this.state.serverState.campan})
+      this.sock.emit('gpio',{cmd:'tilt',data:this.state.serverState.camtilt})
+    })
   }
   // State setters
   setContState(contState) {this.setState({contState})};
   setNavState(navState) {this.setState({navState})};
   setServerState(serverState) {this.setState({serverState})};
   setWelcomeState(welcomeState) {this.setState({welcomeState})};
+  // State getters
   getContState() {return this.state.contState};
   getNavState() {return this.state.navState};
   getServerState() {return this.state.serverState};
   getWelcomeState() {return this.state.welcomeState};
+  // Renderer
   render() {
     switch (this.state.navState.selected) {
       case 'welcome':           return <ViewRenderer navState={this.state.navState} serverdata={this.state.serverState} viewhandler={WelcomeView} data={this.state.welcomeState}/>
@@ -175,10 +197,12 @@ class App extends Component {
   }
 }
 
+// Helper: DefaultViewHandler
 const DefaultViewHandler = (props) => {
   return <p>Default view</p>
 }
 
+// Helper: ViewRenderer
 const ViewRenderer = (props) => {
   return (
     <div>

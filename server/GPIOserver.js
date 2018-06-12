@@ -1,11 +1,22 @@
+// Importing dependencies
 var io = require('socket.io');
-//const JSONtools = require('./JSONtools.js');
-
+var gpio = require('rpi-gpio');
 const raspi = require('raspi');
 const pwm = require('raspi-pwm');
 
-var gpio = require('rpi-gpio');
+/*
+CONTENTS
+- Settings
+  - GPIOdesignations
+- Helper
+  - CAMhandler
+  - GPIOhandler
+  - GpioClientHandler
+- Main class
+  - GpioServer
+*/
 
+// Settings
 const GPIOdesignations = {
   tilt: 'GPIO12', // Pin 32
   pan: 'GPIO19', // Pin 35
@@ -15,6 +26,7 @@ const GPIOdesignations = {
   nico: 12,
 }
 
+// Helper: CAMhandler
 class CAMhandler {
   constructor() {
     raspi.init(() => {});
@@ -28,6 +40,7 @@ class CAMhandler {
   pan(val)  {this.PAN.write(0.04+0.07*val)}
 }
 
+// Helper: GPIOhandler
 class GPIOhandler {
   constructor() {
     this.pins = {}
@@ -48,14 +61,22 @@ class GPIOhandler {
   }
 }
 
-// GPIO12, Pin 32: Tilt
-// GPIO19, Pin 35: Pan
-// GPIO4,  Pin 7: LED
-// GPIO5,  Pin 29: LED
-// Pin26: Alex
-// Pin12: Nico
+// Helper: GpioClientHandler
+class GpioClienthandler {
+  constructor(client, topServer) {
+    // Basic class variables
+    this.client = client;
+    this.topServer = topServer;
+    this.cam = topServer.cam;
+    // Binding client event listeners
+    this.client.on('tilt', (value) => {this.cam.tilt(value)})
+    this.client.on('pan', (value) => {this.cam.pan(value)})
+    this.client.on('pin', (data) => {this.topServer.gpiohandler.write(data.pin, data.value)})
+    this.topServer.wink()
+  };
+};
 
-// gpio: 29, 31, 26, 12
+// Main class
 class GpioServer {
   constructor(port) {
     // Basic class variables
@@ -87,19 +108,5 @@ class GpioServer {
     setTimeout(() => {this.gpiohandler.write(this.led1, 0)}, 1000)
   }
 }
-
-class GpioClienthandler {
-  constructor(client, topServer) {
-    // Basic class variables
-    this.client = client;
-    this.topServer = topServer;
-    this.cam = topServer.cam;
-    // Binding client event listeners
-    this.client.on('tilt', (value) => {this.cam.tilt(value)})
-    this.client.on('pan', (value) => {this.cam.pan(value)})
-    this.client.on('pin', (data) => {this.topServer.gpiohandler.write(data.pin, data.value)})
-    this.topServer.wink()
-  };
-};
 
 var server = new GpioServer(8004)

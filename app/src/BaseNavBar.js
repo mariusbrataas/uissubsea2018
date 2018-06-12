@@ -1,3 +1,4 @@
+// Importing dependencies
 import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import {
@@ -14,10 +15,23 @@ import {
   DropdownMenu,
   DropdownItem } from 'reactstrap';
 
+/*
+CONTENTS
+- Helper
+  - DefaultNavBarConfig
+- Main class: BaseNavBar
+  - constructor
+  - toggle
+  - camerasToggle
+  - handleStartStopwatch
+  - render
+*/
+
+// Helper: DefaultNavBarConfig
 export function DefaultNavBarConfig(updateState) {
   return {
     title: 'UiS Subsea 2018',
-    selected: 'dashboard',
+    selected: 'welcome',
     isOpen: false,
     updateState: updateState,
     items: {
@@ -46,6 +60,7 @@ export function DefaultNavBarConfig(updateState) {
   }
 }
 
+// Main class: BaseNavBar
 export class BaseNavBar extends Component {
   constructor(props) {
     super(props);
@@ -106,6 +121,7 @@ export class BaseNavBar extends Component {
                               this.state.selected = key;
                               this.state.isOpen = false;
                               this.state.updateState(this.state);
+                              this.toggle()
                             }}
                           >{this.state.cameraItems[key].value}</DropdownItem>
                         )
@@ -121,6 +137,7 @@ export class BaseNavBar extends Component {
                   onClick={() => {
                     this.state.selected = 'controllers';
                     this.state.updateState(this.state);
+                    this.toggle()
                   }}
                 >Controller settings</Button>
               </div>
@@ -133,6 +150,7 @@ export class BaseNavBar extends Component {
                   onClick={() => {
                     this.state.selected = 'server';
                     this.state.updateState(this.state);
+                    this.toggle()
                   }}
                 >Server settings</Button>
               </div>
@@ -144,6 +162,7 @@ export class BaseNavBar extends Component {
                       color='danger'
                       onClick={() => {
                         console.log('Emergency stop')
+                        this.toggle()
                       }}
                     >Emergency stop</Button>
                   </div>
