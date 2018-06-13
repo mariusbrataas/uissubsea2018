@@ -236,12 +236,14 @@ class CANclienthandler {
           if (btnstate) {
             this.gpio.emit('pin', {pin:GPIOdesignations.led1, value:1});
             this.gpio.emit('pin', {pin:GPIOdesignations.led2, value:1});
+            this.topServer.io.volatile.emit('downstreamConfigs', this.topServer.configs)
           }
         });
         this.client.on('Lights off', (btnstate) => {
           if (btnstate) {
             this.gpio.emit('pin', {pin:GPIOdesignations.led1, value:0});
             this.gpio.emit('pin', {pin:GPIOdesignations.led2, value:0});
+            this.topServer.io.volatile.emit('downstreamConfigs', this.topServer.configs)
           }
         });
         this.client.on('Toggle lights', (btnstate) => {
@@ -253,6 +255,7 @@ class CANclienthandler {
             }
             this.gpio.emit('pin', {pin:GPIOdesignations.led1, value:this.topServer.lights});
             this.gpio.emit('pin', {pin:GPIOdesignations.led2, value:this.topServer.lights});
+            this.topServer.io.volatile.emit('downstreamConfigs', this.topServer.configs)
           }
         });
         this.client.on('Toggle Alex', (btnstate) => {
@@ -263,6 +266,7 @@ class CANclienthandler {
               this.topServer.alexpin = 0;
             }
             this.gpio.emit('pin', {pin:GPIOdesignations.alex, value:this.topServer.alexpin});
+            this.topServer.io.volatile.emit('downstreamConfigs', this.topServer.configs)
           }
         });
         this.client.on('Camera up', (btnstate) => {
@@ -295,30 +299,30 @@ class CANclienthandler {
         });
         this.client.on('Rotate manip right', (btnstate) => {
           if (btnstate) {
-            this.canhandler.pushThrusts({'Mrot', 0.3})
+            this.canhandler.sendThrusts({'Mrot': 0.3})
           } else {
-            this.canhandler.pushThrusts({'Mrot', 0})
+            this.canhandler.sendThrusts({'Mrot': 0})
           }
         });
         this.client.on('Rotate manip left', (btnstate) => {
           if (btnstate) {
-            this.canhandler.pushThrusts({'Mrot', -0.3})
+            this.canhandler.sendThrusts({'Mrot': -0.3})
           } else {
-            this.canhandler.pushThrusts({'Mrot', 0})
+            this.canhandler.sendThrusts({'Mrot': 0})
           }
         });
         this.client.on('Grab', (btnstate) => {
           if (btnstate) {
-            this.canhandler.pushThrusts({'Mgrab', 0.25})
+            this.canhandler.sendThrusts({'Mgrab': 0.35})
           } else {
-            this.canhandler.pushThrusts({'Mrot', 0})
+            this.canhandler.sendThrusts({'Mgrab': 0})
           }
         });
         this.client.on('Release', (btnstate) => {
           if (btnstate) {
-            this.canhandler.pushThrusts({'Mgrab', -0.25})
+            this.canhandler.sendThrusts({'Mgrab': -0.35})
           } else {
-            this.canhandler.pushThrusts({'Mrot', 0})
+            this.canhandler.sendThrusts({'Mgrab': 0})
           }
         });
         // Forwarding other GPIO

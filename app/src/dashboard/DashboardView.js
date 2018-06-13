@@ -70,7 +70,8 @@ export const DashboardView = (props) => {
                 mode: 'static',
                 catchDistance: 1000,
                 color: 'gray',
-                position: {left: '50%', top: '50%'}
+                position: {left: '50%', top: '50%'},
+                lockX: true
               }
             }
             containerStyle={
@@ -96,6 +97,36 @@ export const DashboardView = (props) => {
                 color={props.serverdata.configs.gpiostatus.alex.state ? 'danger' : 'primary'}
                 onClick={() => {props.serverdata.sock.emit('Toggle Alex', true)}}
               >{props.serverdata.configs.gpiostatus.alex.state ? 'Motorcontrollers on' : 'Motorcontrollers off'}</Button>
+            </div>
+            <div style={{padding:'2px 2px'}}>
+              <Button
+                onClick={() => {props.serverdata.sock.emit('Rotate manip right', true)}}
+              >Rotate manip right</Button>
+            </div>
+            <div style={{padding:'2px 2px'}}>
+              <Button
+                onClick={() => {props.serverdata.sock.emit('Rotate manip left', true)}}
+              >Rotate manip left</Button>
+            </div>
+            <div style={{padding:'2px 2px'}}>
+              <Button
+                onClick={() => {props.serverdata.sock.emit('Rotate manip right', false)}}
+              >Stop rotating</Button>
+            </div>
+            <div style={{padding:'2px 2px'}}>
+              <Button
+                onClick={() => {props.serverdata.sock.emit('Grab', true)}}
+              >Start grab</Button>
+            </div>
+            <div style={{padding:'2px 2px'}}>
+              <Button
+                onClick={() => {props.serverdata.sock.emit('Release', true)}}
+              >Start release</Button>
+            </div>
+            <div style={{padding:'2px 2px'}}>
+              <Button
+                onClick={() => {props.serverdata.sock.emit('Grab', false)}}
+              >Stop grabber</Button>
             </div>
           </CardBody>
         </Card>

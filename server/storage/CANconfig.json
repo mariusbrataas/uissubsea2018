@@ -39,7 +39,7 @@
         "id": "F",
         "engage": true,
         "status": {},
-        "reverse": true
+        "reverse": false
     },
     "alh": {
         "title": "Aft Left Horizontal",
@@ -57,17 +57,17 @@
     },
     "Mgrab": {
         "title": "Manipulator grabber",
-        "id": "13",
-        "engage": false,
+        "id": "14",
+        "engage": true,
         "status": {},
-        "reverse": false
+        "reverse": true
     },
     "Mrot": {
         "title": "Rotate manipulator",
-        "id": "14",
-        "engage": false,
+        "id": "13",
+        "engage": true,
         "status": {},
-        "reverse": false
+        "reverse": true
     },
     "Mtilt": {
         "title": "Tilt manipulator",

@@ -101,8 +101,8 @@ class GpioServer {
     this.gpiohandler.write(this.led1, 1)
     this.gpiohandler.write(this.led2, 1)
     setTimeout(() => {this.gpiohandler.write(this.led1, 0); this.gpiohandler.write(this.led2, 0)}, 1000)
-    setTimeout(() => {this.gpiohandler.write(this.led1, 1); this.gpiohandler.write(this.led2, 1)}, 2000)
-    setTimeout(() => {this.gpiohandler.write(this.led1, 0); this.gpiohandler.write(this.led2, 0)}, 3000)
+    setTimeout(() => {this.gpiohandler.write(this.led1, 1); this.gpiohandler.write(this.led2, 1)}, 1500)
+    setTimeout(() => {this.gpiohandler.write(this.led1, 0); this.gpiohandler.write(this.led2, 0)}, 2000)
   }
 }
 
