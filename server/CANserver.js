@@ -148,6 +148,47 @@ function prepMotorMsg(id, cmd, value) {
   return msg
 };
 
+// Helper: PIDregulator
+
+class PIDregulator {
+  constructor(kp, ki, kd) {
+    // Constants
+    this.kp = kp;
+    this.ki = ki;
+    this.kd = kd;
+    // Error
+    this.e = 0.0;
+    // Calculations
+    this.p = 0.0;
+    this.i = 0.0;
+    this.d = 0.0;
+    this.pid = 0.0;
+    // Helper variables
+    this.t = (new Date().getTime())/1000;
+    // Binding class methods
+    this.step = this.step.bind(this);
+    this.reset = this.reset.bind(this);
+  }
+  step(e) {
+    var dt = ((new Date().getTime())/1000) - this.t;
+    this.p = this.kp * e;
+    this.i += this.ki * dt * e;
+    this.d = this.kd * (e - this.e)/dt;
+    this.pid = this.p + this.kp * (this.i + this.d);
+    this.e = e;
+    this.t = (new Date().getTime())/1000;
+    return this.pid;
+  }
+  reset() {
+    this.e = 0.0;
+    this.p = 0.0;
+    this.i = 0.0;
+    this.d = 0.0;
+    this.pid = 0.0;
+    this.t = (new Date().getTime())/1000;
+  }
+}
+
 // Helper: CANclienthandler
 class CANclienthandler {
   constructor(client, topServer) {
@@ -211,7 +252,7 @@ class CANclienthandler {
               this.topServer.lights = 0;
             }
             this.gpio.emit('pin', {pin:GPIOdesignations.led1, value:this.topServer.lights});
-            this.gpio.emit('pin', {pin:GPIOdesignations.led1, value:this.topServer.lights});
+            this.gpio.emit('pin', {pin:GPIOdesignations.led2, value:this.topServer.lights});
           }
         });
         this.client.on('Toggle Alex', (btnstate) => {
@@ -250,6 +291,34 @@ class CANclienthandler {
             this.topServer.campan -= 0.1;
             this.topServer.campan = Math.max(Math.min(1,this.topServer.campan),0);
             this.gpio.emit('pan', this.topServer.campan);
+          }
+        });
+        this.client.on('Rotate manip right', (btnstate) => {
+          if (btnstate) {
+            this.canhandler.pushThrusts({'Mrot', 0.3})
+          } else {
+            this.canhandler.pushThrusts({'Mrot', 0})
+          }
+        });
+        this.client.on('Rotate manip left', (btnstate) => {
+          if (btnstate) {
+            this.canhandler.pushThrusts({'Mrot', -0.3})
+          } else {
+            this.canhandler.pushThrusts({'Mrot', 0})
+          }
+        });
+        this.client.on('Grab', (btnstate) => {
+          if (btnstate) {
+            this.canhandler.pushThrusts({'Mgrab', 0.25})
+          } else {
+            this.canhandler.pushThrusts({'Mrot', 0})
+          }
+        });
+        this.client.on('Release', (btnstate) => {
+          if (btnstate) {
+            this.canhandler.pushThrusts({'Mgrab', -0.25})
+          } else {
+            this.canhandler.pushThrusts({'Mrot', 0})
           }
         });
         // Forwarding other GPIO
@@ -336,7 +405,7 @@ class CANserver {
     this.lights = 0;
     this.alexpin = 0;
     this.sensorRecvAdr = '20';
-    this.sensorSendAdr = '19';
+    this.sensorSendAdr = '32';
     // Configs
     this.configs = {
       canbus: {
@@ -352,6 +421,12 @@ class CANserver {
       sensors: {
         healthy: false,
         active: false
+      },
+      gpiostatus: {
+        led1: {pin:GPIOdesignations.led1, state:0},
+        led2: {pin:GPIOdesignations.led2, state:0},
+        alex: {pin:GPIOdesignations.alex, state:0},
+        nico: {pin:GPIOdesignations.nico, state:0},
       }
     }
     // Binding class methods

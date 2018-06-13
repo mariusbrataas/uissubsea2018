@@ -29,7 +29,7 @@ class simpleCAN {
   send(msg) {
     this.sendCount++;
     this.lastSend = new Date();
-    if (this.sendCount > 100) {
+    if (this.sendCount > 5000) {
       console.log('Start bus reset')
       this.sendCount = 0;
       this.resetBus()
@@ -113,3 +113,5 @@ function prepMotorMsg(id, cmd, value) {
   };
   return msg
 };
+
+var c = new simpleCAN()

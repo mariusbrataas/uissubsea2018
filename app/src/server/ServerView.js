@@ -99,6 +99,12 @@ export function DefaultServerConfig(updateState, getState, sock) {
       sensors: {
         healthy: false,
         active: false
+      },
+      gpiostatus: {
+        led1: {pin:7, state:0},
+        led2: {pin:7, state:0},
+        alex: {pin:7, state:0},
+        nico: {pin:7, state:0},
       }
     }
   }

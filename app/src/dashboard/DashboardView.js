@@ -87,13 +87,15 @@ export const DashboardView = (props) => {
             <CardTitle>Quick access</CardTitle>
             <div style={{padding:'2px 2px'}}>
               <Button
+                color={props.serverdata.configs.gpiostatus.led1.state ? 'primary' : 'danger'}
                 onClick={() => {props.serverdata.sock.emit('Toggle lights', true)}}
-              >Toggle lights</Button>
+              >{props.serverdata.configs.gpiostatus.led1.state ? 'Lights off' : 'Lights on'}</Button>
             </div>
             <div style={{padding:'2px 2px'}}>
               <Button
+                color={props.serverdata.configs.gpiostatus.alex.state ? 'danger' : 'primary'}
                 onClick={() => {props.serverdata.sock.emit('Toggle Alex', true)}}
-              >Toggle Alex</Button>
+              >{props.serverdata.configs.gpiostatus.alex.state ? 'Motorcontrollers on' : 'Motorcontrollers off'}</Button>
             </div>
           </CardBody>
         </Card>
