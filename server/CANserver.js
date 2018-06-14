@@ -149,7 +149,6 @@ function prepMotorMsg(id, cmd, value) {
 };
 
 // Helper: PIDregulator
-
 class PIDregulator {
   constructor(kp, ki, kd) {
     // Constants
@@ -173,6 +172,7 @@ class PIDregulator {
     var dt = ((new Date().getTime())/1000) - this.t;
     this.p = this.kp * e;
     this.i += this.ki * dt * e;
+    this.i = Math.max(-1, Math.min(1, this.i));
     this.d = this.kd * (e - this.e)/dt;
     this.pid = this.p + this.kp * (this.i + this.d);
     this.e = e;
@@ -258,7 +258,7 @@ class CANclienthandler {
             this.topServer.io.volatile.emit('downstreamConfigs', this.topServer.configs)
           }
         });
-        this.client.on('Toggle Alex', (btnstate) => {
+        this.client.on('Toggle motorcontrollers', (btnstate) => {
           if (btnstate) {
             if (this.topServer.alexpin == 0) {
               this.topServer.alexpin = 1;
@@ -408,7 +408,7 @@ class CANserver {
     this.campan = 0.5;
     this.lights = 0;
     this.alexpin = 0;
-    this.sensorRecvAdr = '20';
+    this.sensorRecvAdr = 32;
     this.sensorSendAdr = '32';
     // Configs
     this.configs = {
@@ -431,8 +431,18 @@ class CANserver {
         led2: {pin:GPIOdesignations.led2, state:0},
         alex: {pin:GPIOdesignations.alex, state:0},
         nico: {pin:GPIOdesignations.nico, state:0},
+      },
+      rollregulator: {
+        kp: 1,
+        ki: 1,
+        kd: 1,
       }
     }
+    // Regulator
+    //this.pid = new PIDregulator(this.configs.rollregulator.kp, this.configs.rollregulator.ki, this.configs.rollregulator.kd)
+    //this.pidInterval = setInterval(() => {
+    //  this.callForSensordata()
+    //}, 100)
     // Binding class methods
     this.handleNewClient = this.handleNewClient.bind(this);
     this.callForSensordata = this.callForSensordata.bind(this);
@@ -453,10 +463,17 @@ class CANserver {
     this.canhandler.channel.send({id:this.sensorSendAdr, data:new Buffer([0,0,0,0])});
   }
   handleSensorData(tmpid, msg) {
-    if (tmpid == this.sensorRecvAdr) {
+    if (msg.id == this.sensorRecvAdr) {
       this.canhandler.activate = true;
       this.canhandler.specialMethod = null;
-      console.log('Received sensordata')
+      const reg = this.pid.step(Math.sin((msg.data[1]*Math.PI)/180))
+      console.log('PID:', reg);
+      this.canhandler.sendThrusts({
+        frv: Math.max(-1, Math.min(1, reg)),
+        arv: Math.max(-1, Math.min(1, reg)),
+        flv: - Math.max(-1, Math.min(1, reg)),
+        alv: - Math.max(-1, Math.min(1, reg)),
+      })
     }
   }
 }

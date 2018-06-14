@@ -258,6 +258,7 @@ const ViewRenderer = (props) => {
       <div className='mainFrame'>
         <props.viewhandler data={props.data} serverdata={props.serverdata ? props.serverdata : null} navdata={props.navState}/>
       </div>
+
     </div>
   )
 }

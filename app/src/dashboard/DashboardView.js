@@ -2,6 +2,7 @@
 import React, {Component} from 'react';
 import 'bootstrap/dist/css/bootstrap.css';
 import {
+  ButtonGroup,
   Card,
   CardDeck,
   CardBody,
@@ -87,46 +88,28 @@ export const DashboardView = (props) => {
           <CardBody>
             <CardTitle>Quick access</CardTitle>
             <div style={{padding:'2px 2px'}}>
-              <Button
-                color={props.serverdata.configs.gpiostatus.led1.state ? 'primary' : 'danger'}
-                onClick={() => {props.serverdata.sock.emit('Toggle lights', true)}}
-              >{props.serverdata.configs.gpiostatus.led1.state ? 'Lights off' : 'Lights on'}</Button>
+              <ButtonGroup>
+                <Button
+                  color='danger'
+                  onClick={() => {props.serverdata.sock.emit('Lights off', true)}}
+                >Lights off</Button>
+                <Button
+                  color='primary'
+                  onClick={() => {props.serverdata.sock.emit('Lights on', true)}}
+                >Lights on</Button>
+              </ButtonGroup>
             </div>
             <div style={{padding:'2px 2px'}}>
-              <Button
-                color={props.serverdata.configs.gpiostatus.alex.state ? 'danger' : 'primary'}
-                onClick={() => {props.serverdata.sock.emit('Toggle Alex', true)}}
-              >{props.serverdata.configs.gpiostatus.alex.state ? 'Motorcontrollers on' : 'Motorcontrollers off'}</Button>
-            </div>
-            <div style={{padding:'2px 2px'}}>
-              <Button
-                onClick={() => {props.serverdata.sock.emit('Rotate manip right', true)}}
-              >Rotate manip right</Button>
-            </div>
-            <div style={{padding:'2px 2px'}}>
-              <Button
-                onClick={() => {props.serverdata.sock.emit('Rotate manip left', true)}}
-              >Rotate manip left</Button>
-            </div>
-            <div style={{padding:'2px 2px'}}>
-              <Button
-                onClick={() => {props.serverdata.sock.emit('Rotate manip right', false)}}
-              >Stop rotating</Button>
-            </div>
-            <div style={{padding:'2px 2px'}}>
-              <Button
-                onClick={() => {props.serverdata.sock.emit('Grab', true)}}
-              >Start grab</Button>
-            </div>
-            <div style={{padding:'2px 2px'}}>
-              <Button
-                onClick={() => {props.serverdata.sock.emit('Release', true)}}
-              >Start release</Button>
-            </div>
-            <div style={{padding:'2px 2px'}}>
-              <Button
-                onClick={() => {props.serverdata.sock.emit('Grab', false)}}
-              >Stop grabber</Button>
+              <ButtonGroup>
+                <Button
+                  color='danger'
+                  onClick={() => {props.serverdata.sock.emit('Toggle motorcontrollers', true)}}
+                >Thrusters off</Button>
+                <Button
+                  color='primary'
+                  onClick={() => {props.serverdata.sock.emit('Toggle motorcontrollers', false)}}
+                >Thrusters on</Button>
+              </ButtonGroup>
             </div>
           </CardBody>
         </Card>

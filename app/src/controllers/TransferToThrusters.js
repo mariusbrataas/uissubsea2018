@@ -23,14 +23,15 @@ export default function TransferToThrusters(data) {
   const arhR = data.LONG + data.LAT - data.YAW;
   const mV = Math.max(Math.abs(flvR), Math.abs(frvR), Math.abs(alvR), Math.abs(arvR), 1);
   const mH = Math.max(Math.abs(flhR), Math.abs(frhR), Math.abs(alhR), Math.abs(arhR), 1);
+  const maximums = 0.8;
   return {
-    flv: flvR/mV, // Front Left Vertical
-    frv: frvR/mV, // Front Right Vertical
-    alv: alvR/mV, // Aft Left Vertical
-    arv: arvR/mV, // Aft Right Vertical
-    flh: flhR/mH, // Front Left Horizontal
-    frh: frhR/mH, // Front Right Horizontal
-    alh: alhR/mH, // Aft Left Horizontal
-    arh: arhR/mH, // Aft Right Horizontal
+    flv: Math.max(-maximums, Math.min(flvR/mV, maximums)), // Front Left Vertical
+    frv: Math.max(-maximums, Math.min(frvR/mV, maximums)), // Front Right Vertical
+    alv: Math.max(-maximums, Math.min(alvR/mV, maximums)), // Aft Left Vertical
+    arv: Math.max(-maximums, Math.min(arvR/mV, maximums)), // Aft Right Vertical
+    flh: Math.max(-maximums, Math.min(flhR/mH, maximums)), // Front Left Horizontal
+    frh: Math.max(-maximums, Math.min(frhR/mH, maximums)), // Front Right Horizontal
+    alh: Math.max(-maximums, Math.min(alhR/mH, maximums)), // Aft Left Horizontal
+    arh: Math.max(-maximums, Math.min(arhR/mH, maximums)), // Aft Right Horizontal
   };
 }
