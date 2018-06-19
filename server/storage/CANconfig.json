@@ -4,83 +4,95 @@
         "id": "D",
         "engage": true,
         "status": {},
-        "reverse": false
+        "reverse": false,
+        "multiplier": 1.0
     },
     "frv": {
         "title": "Front Right Vertical",
         "id": "B",
         "engage": true,
         "status": {},
-        "reverse": false
+        "reverse": true,
+        "multiplier": 1.0
     },
     "alv": {
         "title": "Aft Left Vertical",
         "id": "E",
         "engage": true,
         "status": {},
-        "reverse": false
+        "reverse": false,
+        "multiplier": 1.0
     },
     "arv": {
         "title": "Aft Right Vertical",
         "id": "C",
         "engage": true,
         "status": {},
-        "reverse": false
+        "reverse": true,
+        "multiplier": 1.0
     },
     "flh": {
         "title": "Front Left Horizontal",
         "id": "11",
         "engage": true,
         "status": {},
-        "reverse": false
+        "reverse": false,
+        "multiplier": 1.0
     },
     "frh": {
         "title": "Front Right Horizontal",
         "id": "F",
         "engage": true,
         "status": {},
-        "reverse": false
+        "reverse": false,
+        "multiplier": 1.0
     },
     "alh": {
         "title": "Aft Left Horizontal",
         "id": "12",
         "engage": true,
         "status": {},
-        "reverse": false
+        "reverse": false,
+        "multiplier": 1.0
     },
     "arh": {
         "title": "Aft Right Horizontal",
         "id": "10",
         "engage": true,
         "status": {},
-        "reverse": true
+        "reverse": true,
+        "multiplier": 1.0
     },
     "Mgrab": {
         "title": "Manipulator grabber",
         "id": "14",
         "engage": true,
         "status": {},
-        "reverse": true
+        "reverse": true,
+        "multiplier": 1.0
     },
     "Mrot": {
         "title": "Rotate manipulator",
         "id": "13",
         "engage": true,
         "status": {},
-        "reverse": true
+        "reverse": true,
+        "multiplier": 1.0
     },
     "Mtilt": {
         "title": "Tilt manipulator",
         "id": "15",
         "engage": false,
         "status": {},
-        "reverse": false
+        "reverse": false,
+        "multiplier": 1.0
     },
     "SPARE": {
         "title": "SPARE",
         "id": "16",
         "engage": false,
         "status": {},
-        "reverse": false
+        "reverse": false,
+        "multiplier": 1.0
     }
 }

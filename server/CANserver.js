@@ -135,9 +135,10 @@ const scaling = {
 }
 
 // Function to prep full message
-function prepMotorMsg(id, cmd, value) {
+function prepMotorMsg(id, cmd, value, multiplier) {
+  if (multiplier == 0) {multiplier = 0.5}
   var addr = parseInt((cmd2adr[cmd]).concat(id), 16);
-  var data = decimalToHexString(Math.round(value*scaling[cmd]))
+  var data = decimalToHexString(Math.round(multiplier*value*scaling[cmd]))
   for (var i = data.length; i < 8; i++) {data = '0'.concat(data)};
   const prepData = data.match(/.{1,2}/g);
   const msg = {
@@ -258,13 +259,27 @@ class CANclienthandler {
             this.topServer.io.volatile.emit('downstreamConfigs', this.topServer.configs)
           }
         });
+        this.client.on('Soundbox on', () => {
+          this.gpio.emit('pin', {pin:GPIOdesignations.nico, value:1});
+          this.topServer.io.volatile.emit('downstreamConfigs', this.topServer.configs)
+        });
+        this.client.on('Soundbox off', () => {
+          this.gpio.emit('pin', {pin:GPIOdesignations.nico, value:0});
+          this.topServer.io.volatile.emit('downstreamConfigs', this.topServer.configs)
+        });
+        this.client.on('Precision on', () => {
+          this.topServer.configs.canbus.precision = true;
+          this.topServer.configs.canbus.multiplier = this.topServer.configs.canbus.precisionMult;
+          this.topServer.io.volatile.emit('downstreamConfigs', this.topServer.configs)
+        });
+        this.client.on('Precision off', () => {
+          this.topServer.configs.canbus.precision = false;
+          this.topServer.configs.canbus.multiplier = this.topServer.configs.canbus.normalMult;
+          this.topServer.io.volatile.emit('downstreamConfigs', this.topServer.configs)
+        });
         this.client.on('Toggle motorcontrollers', (btnstate) => {
           if (btnstate) {
-            if (this.topServer.alexpin == 0) {
-              this.topServer.alexpin = 1;
-            } else {
-              this.topServer.alexpin = 0;
-            }
+            this.topServer.alexpin = btnstate;
             this.gpio.emit('pin', {pin:GPIOdesignations.alex, value:this.topServer.alexpin});
             this.topServer.io.volatile.emit('downstreamConfigs', this.topServer.configs)
           }
@@ -299,28 +314,28 @@ class CANclienthandler {
         });
         this.client.on('Rotate manip right', (btnstate) => {
           if (btnstate) {
-            this.canhandler.sendThrusts({'Mrot': 0.3})
+            this.canhandler.sendThrusts({'Mrot': 0.7})
           } else {
             this.canhandler.sendThrusts({'Mrot': 0})
           }
         });
         this.client.on('Rotate manip left', (btnstate) => {
           if (btnstate) {
-            this.canhandler.sendThrusts({'Mrot': -0.3})
+            this.canhandler.sendThrusts({'Mrot': -0.7})
           } else {
             this.canhandler.sendThrusts({'Mrot': 0})
           }
         });
         this.client.on('Grab', (btnstate) => {
           if (btnstate) {
-            this.canhandler.sendThrusts({'Mgrab': 0.35})
+            this.canhandler.sendThrusts({'Mgrab': 0.7})
           } else {
             this.canhandler.sendThrusts({'Mgrab': 0})
           }
         });
         this.client.on('Release', (btnstate) => {
           if (btnstate) {
-            this.canhandler.sendThrusts({'Mgrab': -0.35})
+            this.canhandler.sendThrusts({'Mgrab': -0.7})
           } else {
             this.canhandler.sendThrusts({'Mgrab': 0})
           }
@@ -365,10 +380,12 @@ class CANhandler {
     if (this.activate) {
       this.lastSend = new Date();
       if (this.sendCount > 5000) {
+        this.activate = false;
         console.log('Start bus reset')
         this.sendCount = 0;
         this.resetBus()
         console.log('End bus reset')
+        this.activate = true;
       }
       this.channel.send(msg)
       var tmp = 0;
@@ -388,7 +405,7 @@ class CANhandler {
     const msgs = Object.keys(thrusts).forEach((key) => {
       tmp = config.config[key]
       if (tmp.engage) {
-        const msg = prepMotorMsg(tmp.id, config.thrustChanger, thrusts[key] * (tmp.reverse ? -1 : 1));
+        const msg = prepMotorMsg(tmp.id, config.thrustChanger, thrusts[key] * (tmp.reverse ? -1 : 1), this.topServer.configs.canbus.multiplier);
         this.send(msg)
       }
     })
@@ -416,7 +433,11 @@ class CANserver {
         healthy: true,
         active: false,
         thrustChanger: 'set_duty',
-        config: JSONtools.LoadConfig('CANconfig')
+        config: JSONtools.LoadConfig('CANconfig'),
+        multiplier: 0.5,
+        precision: false,
+        precisionMult: 0.25,
+        normalMult: 0.5,
       },
       powersupply: {
         healthy: false,
@@ -436,6 +457,15 @@ class CANserver {
         kp: 1,
         ki: 1,
         kd: 1,
+      },
+      sensordata: {
+        pitch: 0.0,
+        roll: 0.0,
+        tin: 0.0,
+        tout: 0.0,
+        tw: 0.0,
+        d1: 0.0,
+        d2: 0.0
       }
     }
     // Regulator
@@ -466,6 +496,15 @@ class CANserver {
     if (msg.id == this.sensorRecvAdr) {
       this.canhandler.activate = true;
       this.canhandler.specialMethod = null;
+      this.configs.sensordata = {
+        pitch: msg.data[0],
+        roll: msg.data[1],
+        tin: msg.data[2],
+        tout: msg.data[3],
+        tw: msg.data[4],
+        d1: msg.data[5],
+        d2: msg.data[6]
+      }
       const reg = this.pid.step(Math.sin((msg.data[1]*Math.PI)/180))
       console.log('PID:', reg);
       this.canhandler.sendThrusts({

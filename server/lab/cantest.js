@@ -115,3 +115,5 @@ function prepMotorMsg(id, cmd, value) {
 };
 
 var c = new simpleCAN()
+var lastMsg = null
+c.channel.addListener("onMessage", (msg) => {if (msg.id == 32){lastMsg = msg}});

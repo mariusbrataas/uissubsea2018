@@ -37,17 +37,38 @@ export const TouchStickView = (props) => {
             managerListener={data.leftStickListener} />
         </Card>
         <Card style={{minHeight:'60vh', maxWidth:'200px'}}>
-          <ThrustersLoad
-            sendThrusts={data.sendThrusts}
-            flv={loads.flv}
-            frv={loads.frv}
-            alv={loads.alv}
-            arv={loads.arv}
-            flh={loads.flh}
-            frh={loads.frh}
-            alh={loads.alh}
-            arh={loads.arh}
-          />
+          <div>
+            <ThrustersLoad
+              sendThrusts={data.sendThrusts}
+              flv={loads.flv}
+              frv={loads.frv}
+              alv={loads.alv}
+              arv={loads.arv}
+              flh={loads.flh}
+              frh={loads.frh}
+              alh={loads.alh}
+              arh={loads.arh}
+            />
+            <Card style={{minHeight:'30vh', marginTop:'20px'}}>
+              <JoyStick
+                options={
+                  {
+                    mode: 'static',
+                    catchDistance: 1000,
+                    color: 'black',
+                    position: {left: '50%', top: '50%'},
+                  }
+                }
+                containerStyle={
+                  {
+                    position: 'absolute',
+                    height: '100%',
+                    width: '100%',
+                  }
+                }
+                managerListener={data.centerStickListener} />
+            </Card>
+          </div>
         </Card>
         <Card style={{minHeight:'60vh'}}>
           <JoyStick

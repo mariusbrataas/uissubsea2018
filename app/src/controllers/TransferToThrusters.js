@@ -12,7 +12,7 @@
 //  [ 1,-1, 1]   [Yaw]]
 //  [ 1, 1,-1]]
 
-export default function TransferToThrusters(data) {
+export default function TransferToThrusters(data, maximums) {
   const flvR = data.VERT + data.ROLL - data.PITCH;
   const frvR = data.VERT - data.ROLL - data.PITCH;
   const alvR = data.VERT + data.ROLL + data.PITCH;
@@ -23,7 +23,7 @@ export default function TransferToThrusters(data) {
   const arhR = data.LONG + data.LAT - data.YAW;
   const mV = Math.max(Math.abs(flvR), Math.abs(frvR), Math.abs(alvR), Math.abs(arvR), 1);
   const mH = Math.max(Math.abs(flhR), Math.abs(frhR), Math.abs(alhR), Math.abs(arhR), 1);
-  const maximums = 0.8;
+  if (maximums == null) {maximums = 1};
   return {
     flv: Math.max(-maximums, Math.min(flvR/mV, maximums)), // Front Left Vertical
     frv: Math.max(-maximums, Math.min(frvR/mV, maximums)), // Front Right Vertical

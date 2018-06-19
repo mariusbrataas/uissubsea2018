@@ -124,6 +124,8 @@
             },
             "options": [
                 "Nothing",
+                "Precision on",
+                "Precision off",
                 "Grab",
                 "Release",
                 "Rotate manip right",
@@ -272,6 +274,8 @@
             },
             "options": [
                 "Nothing",
+                "Precision on",
+                "Precision off",
                 "Grab",
                 "Release",
                 "Rotate manip right",
@@ -420,6 +424,8 @@
             },
             "options": [
                 "Nothing",
+                "Precision on",
+                "Precision off",
                 "Grab",
                 "Release",
                 "Rotate manip right",

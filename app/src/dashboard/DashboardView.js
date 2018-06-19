@@ -22,13 +22,14 @@ CONTENTS
 */
 
 // Helper: DefaultDashboardConfig
-export function DefaultDashboardConfig(sendThrusts, camPosListener, leftStickListener, rightStickListener) {
+export function DefaultDashboardConfig(sendThrusts, camPosListener, leftStickListener, rightStickListener, centerStickListener) {
   return {
     title: 'Dashboard',
     subtitle: 'Not finished.',
     camPosListener: camPosListener,
     leftStickListener: leftStickListener,
     rightStickListener: rightStickListener,
+    centerStickListener: centerStickListener,
     loads: {
       flv: 0.0,
       frv: 0.0,
@@ -109,6 +110,49 @@ export const DashboardView = (props) => {
                   color='primary'
                   onClick={() => {props.serverdata.sock.emit('Toggle motorcontrollers', false)}}
                 >Thrusters on</Button>
+              </ButtonGroup>
+            </div>
+            <div style={{padding:'2px 2px'}}>
+              <ButtonGroup>
+                <Button
+                  color='danger'
+                  onClick={() => {props.serverdata.sock.emit('Soundbox off')}}
+                >Nicolai off</Button>
+                <Button
+                  color='primary'
+                  onClick={() => {props.serverdata.sock.emit('Soundbox on')}}
+                >Nicolai on</Button>
+              </ButtonGroup>
+            </div>
+            <div style={{padding:'2px 2px'}}>
+              <ButtonGroup>
+                <Button
+                  color='danger'
+                  onClick={() => {props.serverdata.sock.emit('Precision off')}}
+                >Precision off</Button>
+                <Button
+                  color='primary'
+                  onClick={() => {props.serverdata.sock.emit('Precision on')}}
+                >Precision on</Button>
+              </ButtonGroup>
+            </div>
+            <div style={{padding:'2px 2px', marginTop:'30px'}}>
+              <p>Precision: {props.serverdata.configs.canbus.multiplier}</p>
+              <ButtonGroup>
+                {
+                  [0.1,0.2,0.3,0.4,0.5,0.6].map((mult) => {
+                    return (
+                      <Button
+                        color='primary'
+                        onClick={() => {
+                          var newdata = props.serverdata.getState()
+                          newdata.configs.canbus.normalMult = mult;
+                          newdata.sock.emit('upstreamConfigs', newdata.configs);
+                        }}
+                      >{mult}</Button>
+                    )
+                  })
+                }
               </ButtonGroup>
             </div>
           </CardBody>

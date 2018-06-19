@@ -71,6 +71,7 @@ export function DefaultServerConfig(updateState, getState, sock) {
     passwd: '',
     verified: false,
     verificationfail: false,
+    multiplier: 0.5,
     healthy: false,
     healthycolor: '#0dee24',
     unhealthycolor: '#ee650d',
@@ -81,15 +82,16 @@ export function DefaultServerConfig(updateState, getState, sock) {
       canbus: {
         healthy: false,
         active: false,
+        multiplier: 1.0,
         config: {
-          flv: {title:'Front Left Vertical',    id:0, engage:false, status:{}, reverse:false}, // Front Left Vertical
-          frv: {title:'Front Right Vertical',   id:0, engage:false, status:{}, reverse:false}, // Front Right Vertical
-          alv: {title:'Aft Left Vertical',      id:0, engage:false, status:{}, reverse:false}, // Aft Left Vertical
-          arv: {title:'Aft Right Vertical',     id:0, engage:false, status:{}, reverse:false}, // Aft Right Vertical
-          flh: {title:'Front Left Horizontal',  id:0, engage:false, status:{}, reverse:false}, // Front Left Horizontal
-          frh: {title:'Front Right Horizontal', id:0, engage:false, status:{}, reverse:false}, // Front Right Horizontal
-          alh: {title:'Aft Left Horizontal',    id:0, engage:false, status:{}, reverse:false}, // Aft Left Horizontal
-          arh: {title:'Aft Right Horizontal',   id:0, engage:false, status:{}, reverse:false}, // Aft Right Horizontal
+          flv: {title:'Front Left Vertical',    id:0, engage:false, status:{}, reverse:false, multiplier:1}, // Front Left Vertical
+          frv: {title:'Front Right Vertical',   id:0, engage:false, status:{}, reverse:false, multiplier:1}, // Front Right Vertical
+          alv: {title:'Aft Left Vertical',      id:0, engage:false, status:{}, reverse:false, multiplier:1}, // Aft Left Vertical
+          arv: {title:'Aft Right Vertical',     id:0, engage:false, status:{}, reverse:false, multiplier:1}, // Aft Right Vertical
+          flh: {title:'Front Left Horizontal',  id:0, engage:false, status:{}, reverse:false, multiplier:1}, // Front Left Horizontal
+          frh: {title:'Front Right Horizontal', id:0, engage:false, status:{}, reverse:false, multiplier:1}, // Front Right Horizontal
+          alh: {title:'Aft Left Horizontal',    id:0, engage:false, status:{}, reverse:false, multiplier:1}, // Aft Left Horizontal
+          arh: {title:'Aft Right Horizontal',   id:0, engage:false, status:{}, reverse:false, multiplier:1}, // Aft Right Horizontal
         }
       },
       powersupply: {
@@ -105,6 +107,15 @@ export function DefaultServerConfig(updateState, getState, sock) {
         led2: {pin:7, state:0},
         alex: {pin:7, state:0},
         nico: {pin:7, state:0},
+      },
+      sensordata: {
+        pitch: 0.0,
+        roll: 0.0,
+        tin: 0.0,
+        tout: 0.0,
+        tw: 0.0,
+        d1: 0.0,
+        d2: 0.0
       }
     }
   }
@@ -200,6 +211,14 @@ const CanbusCard = (props) => {
                       data.sock.emit('upstreamConfigs', newdata.configs)
                     }}>{tmp.reverse ? 'Reversed' : 'Straight'}</Button>
                   </ButtonGroup>
+                  <Nav style={{marginTop:'15px'}}>
+                    <form onSubmit={(e) => {e.preventDefault(); var newdata = data.getState(); newdata.configs.canbus.config[key].multiplier = tmp.multiplier; data.sock.emit('upstreamConfigs', newdata.configs)}}>
+                        <Label>Thrust multiplier: {tmp.multiplier}</Label>
+                        <Input placeholder={tmp.multiplier} onChange={(e) => {tmp.multiplier = e.target.value}}/>
+                      <FormGroup>
+                      </FormGroup>
+                    </form>
+                  </Nav>
                 </div>
               )
             })
@@ -235,6 +254,13 @@ const SensorsCard = (props) => {
         <CardTitle>Sensors</CardTitle>
         <CardSubtitle>Status: {config.healthy ? (config.active ? 'Active' : 'Healthy') : 'Unhealthy'}</CardSubtitle>
         <hr className="my-2" />
+        {
+          Object.keys(data.sensordata).map((key) => {
+            return (
+              <p>{key}: {data.sensordata[key]}</p>
+            )
+          })
+        }
       </CardBody>
     </Card>
   )
@@ -251,8 +277,6 @@ export const ServerView = (props) => {
           props.data.verified ?
             <div>
               <CanbusCard data={props.data}/>
-              <PowersupplyCard data={props.data}/>
-              <SensorsCard data={props.data}/>
             </div>
           : null
         }

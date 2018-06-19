@@ -48,7 +48,8 @@ export function DefaultNavBarConfig(updateState) {
       frontcenter:  {value:'Front center cam'},
       frontleft:    {value:'Left cam'},
       frontright:   {value:'Right cam'},
-      aft:          {value:'Aft cam'}
+      aft:          {value:'Aft cam'},
+      touchstick:   {value:'Touch controller'}
     },
     tinyviewsOpen: false,
     stopWatch: {
@@ -94,7 +95,6 @@ export class BaseNavBar extends Component {
     return (
       <div>
         <Navbar color="light" light expand="md" fixed='top'>
-          <NavbarBrand onClick={() => {this.state.selected = 'welcome'; this.state.updateState(this.state)}}>{this.state.title}</NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="mr-auto" navbar>

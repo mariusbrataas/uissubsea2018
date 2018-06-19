@@ -78,6 +78,7 @@ class App extends Component {
     this.camPosListener = this.camPosListener.bind(this);
     this.leftStickListener = this.leftStickListener.bind(this);
     this.rightStickListener = this.rightStickListener.bind(this);
+    this.centerStickListener = this.centerStickListener.bind(this);
     this.calcVirtualThrust = this.calcVirtualThrust.bind(this);
     // Stick variables
     this.leftX = 0.0;
@@ -92,7 +93,7 @@ class App extends Component {
     this.state = {
       navState:               DefaultNavBarConfig(this.setNavState, this.getNavState),
       welcomeState:           DefaultWelcomeConfig(this.setWelcomeState, this.getWelcomeState),
-      dashState:              DefaultDashboardConfig(this.sendThrustData, this.camPosListener, this.leftStickListener, this.rightStickListener),
+      dashState:              DefaultDashboardConfig(this.sendThrustData, this.camPosListener, this.leftStickListener, this.rightStickListener, this.centerStickListener),
       contState:              DefaultControllersConfig(this.setContState, this.getContState, this.sock),
       serverState:            DefaultServerConfig(this.setServerState, this.getServerState, this.sock),
       frontcenterState:       DefaultFrontcenterConfig(),
@@ -139,6 +140,7 @@ class App extends Component {
     Object.keys(this.state.contState.controllers).map((key) => {
       if (!(key in indexes)) {delete this.state.contState.controllers[key]}
     })
+    //this.state.contState.controllers[0] = DefaultControllerConfig(0)
     this.setContState(this.state.contState)
   };
   handleControllerAxis(e) {
@@ -146,7 +148,7 @@ class App extends Component {
     if (config) {
       if (config.engage) {
         const translated = TranslateXboxAxis(e, config);
-        const transfers = TransferToThrusters(translated);
+        const transfers = TransferToThrusters(translated, 1);
         this.sendThrustData(transfers)
       }
     }
@@ -174,7 +176,7 @@ class App extends Component {
   camPosListener(manager) {
     manager.on('move', (e, stick) => {
       this.state.serverState.campan = 0.5+Math.max(-1, Math.min(1, (1/4)*Math.cos(stick.angle.radian)*stick.force))/2;
-      this.state.serverState.camtilt = 0.5+Math.max(-1, Math.min(1, (1/4)*Math.sin(stick.angle.radian)*stick.force))/2;
+      this.state.serverState.camtilt = (0.5+Math.max(-1, Math.min(1, (1/4)*Math.sin(stick.angle.radian)*stick.force))/2);
       this.setServerState(this.state.serverState)
       this.sock.emit('gpio',{cmd:'pan',data:this.state.serverState.campan})
       this.sock.emit('gpio',{cmd:'tilt',data:this.state.serverState.camtilt})
@@ -190,7 +192,7 @@ class App extends Component {
     manager.on('end', (e, stick) => {
       this.leftX = 0.0;
       this.leftY = 0.0;
-      const transfers = TransferToThrusters(this.calcVirtualThrust());
+      const transfers = TransferToThrusters(this.calcVirtualThrust(), 1);
       this.sendThrustData(transfers);
     })
   }
@@ -198,7 +200,7 @@ class App extends Component {
     manager.on('move', (e, stick) => {
       this.rightX = Math.max(-1, Math.min(1, (1/2)*Math.cos(stick.angle.radian)*stick.force));
       this.rightY = Math.max(-1, Math.min(1, (1/2)*Math.sin(stick.angle.radian)*stick.force));
-      const transfers = TransferToThrusters(this.calcVirtualThrust());
+      const transfers = TransferToThrusters(this.calcVirtualThrust(), 1);
       this.sendThrustData(transfers);
     })
     manager.on('end', (e, stick) => {
@@ -208,14 +210,28 @@ class App extends Component {
       this.sendThrustData(transfers);
     })
   }
+  centerStickListener(manager) {
+    manager.on('move', (e, stick) => {
+      this.centerX = Math.max(-1, Math.min(1, (1/4)*Math.cos(stick.angle.radian)*stick.force));
+      this.centerY = Math.max(-1, Math.min(1, (1/4)*Math.sin(stick.angle.radian)*stick.force));
+      const transfers = TransferToThrusters(this.calcVirtualThrust(), 1);
+      this.sendThrustData(transfers);
+    })
+    manager.on('end', (e, stick) => {
+      this.centerX = 0.0;
+      this.centerY = 0.0;
+      const transfers = TransferToThrusters(this.calcVirtualThrust());
+      this.sendThrustData(transfers);
+    })
+  }
   calcVirtualThrust() {
     return {
-      ROLL: this.leftX,
-      PITCH: this.leftY,
-      LAT: this.rightX,
-      LONG: this.rightY,
+      ROLL: 0.0,
+      PITCH: this.rightY,
+      LAT: this.leftX,
+      LONG: this.leftY,
       VERT: 0.0,
-      YAW: 0.0,
+      YAW: this.rightX,
     }
   }
   // State setters
