@@ -66,10 +66,12 @@ class App extends Component {
     this.setContState = this.setContState.bind(this);
     this.setServerState = this.setServerState.bind(this);
     this.setWelcomeState = this.setWelcomeState.bind(this);
+    this.setDashState = this.setDashState.bind(this);
     this.getNavState = this.getNavState.bind(this);
     this.getContState = this.getContState.bind(this);
     this.getServerState = this.getServerState.bind(this);
     this.getWelcomeState = this.getWelcomeState.bind(this);
+    this.getDashState = this.getDashState.bind(this);
     this.lookForControllers = this.lookForControllers.bind(this);
     this.handleControllerAxis = this.handleControllerAxis.bind(this);
     this.handleControllerButton = this.handleControllerButton.bind(this);
@@ -93,7 +95,7 @@ class App extends Component {
     this.state = {
       navState:               DefaultNavBarConfig(this.setNavState, this.getNavState),
       welcomeState:           DefaultWelcomeConfig(this.setWelcomeState, this.getWelcomeState),
-      dashState:              DefaultDashboardConfig(this.sendThrustData, this.camPosListener, this.leftStickListener, this.rightStickListener, this.centerStickListener),
+      dashState:              DefaultDashboardConfig(this.setDashState, this.getDashState, this.sendThrustData, this.camPosListener, this.leftStickListener, this.rightStickListener, this.centerStickListener),
       contState:              DefaultControllersConfig(this.setContState, this.getContState, this.sock),
       serverState:            DefaultServerConfig(this.setServerState, this.getServerState, this.sock),
       frontcenterState:       DefaultFrontcenterConfig(),
@@ -176,7 +178,7 @@ class App extends Component {
   camPosListener(manager) {
     manager.on('move', (e, stick) => {
       this.state.serverState.campan = 0.5+Math.max(-1, Math.min(1, (1/4)*Math.cos(stick.angle.radian)*stick.force))/2;
-      this.state.serverState.camtilt = (0.5+Math.max(-1, Math.min(1, (1/4)*Math.sin(stick.angle.radian)*stick.force))/2);
+      this.state.serverState.camtilt = 1-(0.5+Math.max(-1, Math.min(1, (1/4)*Math.sin(stick.angle.radian)*stick.force))/2);
       this.setServerState(this.state.serverState)
       this.sock.emit('gpio',{cmd:'pan',data:this.state.serverState.campan})
       this.sock.emit('gpio',{cmd:'tilt',data:this.state.serverState.camtilt})
@@ -239,11 +241,13 @@ class App extends Component {
   setNavState(navState) {this.setState({navState})};
   setServerState(serverState) {this.setState({serverState})};
   setWelcomeState(welcomeState) {this.setState({welcomeState})};
+  setDashState(dashState) {this.setState({dashState})};
   // State getters
   getContState() {return this.state.contState};
   getNavState() {return this.state.navState};
   getServerState() {return this.state.serverState};
   getWelcomeState() {return this.state.welcomeState};
+  getDashState() {return this.state.dashState};
   // Renderer
   render() {
     switch (this.state.navState.selected) {

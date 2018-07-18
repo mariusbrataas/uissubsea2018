@@ -31,8 +31,8 @@ wifi.scan(function(err, networks) {
     }
 });
 
-function connectWifi(wifiname) {
-  wifi.connect({ ssid : wifiname, password : ""}, function(err) {
+function connectWifi(wifiname, passwd) {
+  wifi.connect({ ssid : wifiname, password : passwd}, function(err) {
       if (err) {
           console.log(err);
       }

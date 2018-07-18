@@ -7,11 +7,19 @@ import {
   CardDeck,
   CardBody,
   CardTitle,
-  Button
+  CardSubtitle,
+  Button,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Col
 } from 'reactstrap';
 import ReactSimpleRange from 'react-simple-range';
 import JoyStick from 'react-joystick'
 import ThrustersLoad from './ThrustersLoad.js';
+import track from './FlightFinder.js';
+var LineChart = require("react-chartjs").Line;
 
 /*
 CONTENTS
@@ -21,11 +29,14 @@ CONTENTS
   - DashboardView
 */
 
+
 // Helper: DefaultDashboardConfig
-export function DefaultDashboardConfig(sendThrusts, camPosListener, leftStickListener, rightStickListener, centerStickListener) {
+export function DefaultDashboardConfig(updateState, getState, sendThrusts, camPosListener, leftStickListener, rightStickListener, centerStickListener) {
   return {
     title: 'Dashboard',
     subtitle: 'Not finished.',
+    updateState: updateState,
+    getState: getState,
     camPosListener: camPosListener,
     leftStickListener: leftStickListener,
     rightStickListener: rightStickListener,
@@ -41,6 +52,9 @@ export function DefaultDashboardConfig(sendThrusts, camPosListener, leftStickLis
       arh: 0.0
     },
     sendThrusts: sendThrusts,
+    flighttrack: new track(),
+    currentflightdata: {}
+
   }
 };
 
@@ -154,6 +168,123 @@ export const DashboardView = (props) => {
                   })
                 }
               </ButtonGroup>
+            </div>
+          </CardBody>
+        </Card>
+      </CardDeck>
+      <CardDeck style={{marginTop:'10px'}}>
+        <Card style={{maxWidth:'50vw'}}>
+          <CardBody>
+            <div style={{height:'65vh', overflow:'scroll'}}>
+              <CardTitle>Flight finder</CardTitle>
+              <CardSubtitle>Search at:</CardSubtitle>
+              {
+                data.flighttrack.renderDirections()
+              }
+              <hr className="my-2" />
+              <div style={{marginTop:'0px', marginBottom:'15px'}}>
+                <Label>Heading</Label>
+                <Input
+                  placeholder="Heading"
+                  onChange={
+                    (e) => {
+                      data.currentflightdata['heading'] = e.target.value
+                      var newdata = data.getState();
+                      newdata.currentflightdata = data.currentflightdata;
+                      data.updateState(newdata);
+                  }}
+                />
+              </div>
+              <div style={{marginTop:'0px', marginBottom:'15px'}}>
+                <Label>Air speed</Label>
+                <Input
+                  placeholder="Air speed"
+                  onChange={
+                    (e) => {
+                      data.currentflightdata['airspeed'] = e.target.value
+                      var newdata = data.getState();
+                      newdata.currentflightdata = data.currentflightdata;
+                      data.updateState(newdata);
+                  }}
+                />
+              </div>
+              <div style={{marginTop:'0px', marginBottom:'15px'}}>
+                <Label>Ascent rate</Label>
+                <Input
+                  placeholder="Ascent rate"
+                  onChange={
+                    (e) => {
+                      data.currentflightdata['ascentrate'] = e.target.value
+                      var newdata = data.getState();
+                      newdata.currentflightdata = data.currentflightdata;
+                      data.updateState(newdata);
+                  }}
+                />
+              </div>
+              <div style={{marginTop:'0px', marginBottom:'15px'}}>
+                <Label>Timestep</Label>
+                <Input
+                  placeholder="Timestep"
+                  onChange={
+                    (e) => {
+                      data.currentflightdata['timestep'] = e.target.value
+                      var newdata = data.getState();
+                      newdata.currentflightdata = data.currentflightdata;
+                      data.updateState(newdata);
+                  }}
+                />
+              </div>
+              <div style={{marginTop:'0px', marginBottom:'15px'}}>
+                <Label>Wind from</Label>
+                <Input
+                  placeholder="Wind from direction"
+                  onChange={
+                    (e) => {
+                      data.currentflightdata['windfrom'] = e.target.value
+                      var newdata = data.getState();
+                      newdata.currentflightdata = data.currentflightdata;
+                      data.updateState(newdata);
+                  }}
+                />
+              </div>
+              <div style={{marginTop:'0px', marginBottom:'15px'}}>
+                <Label>Wind speed</Label>
+                <Input
+                  placeholder="Wind speed"
+                  onChange={
+                    (e) => {
+                      data.currentflightdata['windspeed'] = e.target.value
+                      var newdata = data.getState();
+                      newdata.currentflightdata = data.currentflightdata;
+                      data.updateState(newdata);
+                  }}
+                />
+              </div>
+              <Button
+                color="primary"
+                onClick={() => {
+                  var newdata = data.getState();
+                  newdata.currentflightdata = data.currentflightdata;
+                  newdata.flighttrack.step(
+                    data.currentflightdata['heading'],
+                    data.currentflightdata['airspeed'],
+                    data.currentflightdata['ascentrate'],
+                    data.currentflightdata['timestep'],
+                    data.currentflightdata['windfrom'],
+                    data.currentflightdata['windspeed']
+                  )
+                  data.updateState(newdata);
+                }}
+              >Calculate</Button>
+              <Button
+                color="danger"
+                onClick={() => {
+                  var newdata = data.getState();
+                  newdata.currentflightdata = {};
+                  newdata.flighttrack = new track()
+                  data.updateState(newdata);
+                }}
+              >Clear data</Button>
             </div>
           </CardBody>
         </Card>

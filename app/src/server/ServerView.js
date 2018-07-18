@@ -246,8 +246,10 @@ const PowersupplyCard = (props) => {
 
 // Card: SensorsCard
 const SensorsCard = (props) => {
+  console.log(props.data)
   const data = props.data;
   const config = data.configs.sensors;
+  const sensdata = data.configs.sensordata;
   return (
     <Card style={{borderLeft: ('5px solid ').concat(config.healthy ? (config.active ? data.activecolor : data.healthycolor) : data.unhealthycolor)}}>
       <CardBody>
@@ -255,9 +257,9 @@ const SensorsCard = (props) => {
         <CardSubtitle>Status: {config.healthy ? (config.active ? 'Active' : 'Healthy') : 'Unhealthy'}</CardSubtitle>
         <hr className="my-2" />
         {
-          Object.keys(data.sensordata).map((key) => {
+          Object.keys(sensdata).map((key) => {
             return (
-              <p>{key}: {data.sensordata[key]}</p>
+              <p>{key}: {sensdata[key]}</p>
             )
           })
         }
@@ -271,16 +273,11 @@ export const ServerView = (props) => {
   return (
     <div style={{padding:'20px'}}>
       <h1 className="display-3">{"Server"}</h1>
-      <CardColumns>
+      <CardDeck>
         <ServerCard data={props.data}/>
-        {
-          props.data.verified ?
-            <div>
-              <CanbusCard data={props.data}/>
-            </div>
-          : null
-        }
-      </CardColumns>
+        {props.data.verified ? <CanbusCard data={props.data}/> : null}
+        {props.data.verified ? <SensorsCard data={props.data}/> : null}
+      </CardDeck>
     </div>
   )
 }

@@ -230,6 +230,11 @@ class CANclienthandler {
         // Binding CAN-specific listeners
         this.client.on('pushCAN', (msg) => {this.canhandler.send(msg)});
         this.client.on('pushThrusts', (thrusts) => {
+          //this.topServer.contThrust = thrusts;
+          //var newthrusts = {frv:null, arv:null, flv:null, alv:null}
+          //Object.keys(newthrusts).map((key) => {newthrusts[key] = this.topServer.regThrust[key] + this.topServer.contThrust[key]})
+          //const m = Math.max(...Object.keys(newthrusts).map((key) => {return newthrusts[key]}))
+          //Object.keys(newthrusts).map((key) => {newthrusts[key] *= (1.0/m)})
           this.canhandler.sendThrusts(thrusts)
         });
         // Buttons
@@ -405,7 +410,7 @@ class CANhandler {
     const msgs = Object.keys(thrusts).forEach((key) => {
       tmp = config.config[key]
       if (tmp.engage) {
-        const msg = prepMotorMsg(tmp.id, config.thrustChanger, thrusts[key] * (tmp.reverse ? -1 : 1), this.topServer.configs.canbus.multiplier);
+        const msg = prepMotorMsg(tmp.id, config.thrustChanger, thrusts[key] * (tmp.reverse ? -1 : 1), (key.includes('M') ? 0.5 : this.topServer.configs.canbus.multiplier));
         this.send(msg)
       }
     })
@@ -427,6 +432,18 @@ class CANserver {
     this.alexpin = 0;
     this.sensorRecvAdr = 32;
     this.sensorSendAdr = '32';
+    this.contThrust = {
+      frv: 0.0,
+      arv: 0.0,
+      flv: 0.0,
+      alv: 0.0,
+    }
+    this.regThrust = {
+      frv: 0.0,
+      arv: 0.0,
+      flv: 0.0,
+      alv: 0.0,
+    }
     // Configs
     this.configs = {
       canbus: {
@@ -454,9 +471,16 @@ class CANserver {
         nico: {pin:GPIOdesignations.nico, state:0},
       },
       rollregulator: {
+        kp: 0.5,
+        ki: 0.5,
+        kd: 0.5,
+        maxint: 5,
+      },
+      pitchregulator: {
         kp: 1,
         ki: 1,
         kd: 1,
+        maxint: 1,
       },
       sensordata: {
         pitch: 0.0,
@@ -468,6 +492,10 @@ class CANserver {
         d2: 0.0
       }
     }
+    // Fetching sensor data
+    this.sensInterval = setInterval(() => {
+      this.callForSensordata();
+    }, 100);
     // Regulator
     //this.pid = new PIDregulator(this.configs.rollregulator.kp, this.configs.rollregulator.ki, this.configs.rollregulator.kd)
     //this.pidInterval = setInterval(() => {
@@ -488,31 +516,37 @@ class CANserver {
     var tmp = new CANclienthandler(client, this);
   }
   callForSensordata() {
-    this.canhandler.activate = false;
+    //this.canhandler.activate = false;
     this.canhandler.specialMethod = this.handleSensorData;
-    this.canhandler.channel.send({id:this.sensorSendAdr, data:new Buffer([0,0,0,0])});
+    this.canhandler.channel.send({id:this.sensorSendAdr, data:new Buffer([0,0])});
   }
   handleSensorData(tmpid, msg) {
     if (msg.id == this.sensorRecvAdr) {
       this.canhandler.activate = true;
       this.canhandler.specialMethod = null;
       this.configs.sensordata = {
-        pitch: msg.data[0],
-        roll: msg.data[1],
+        pitch: msg.data[0]*360/255,
+        roll: msg.data[1]*360/255,
         tin: msg.data[2],
         tout: msg.data[3],
         tw: msg.data[4],
         d1: msg.data[5],
         d2: msg.data[6]
       }
-      const reg = this.pid.step(Math.sin((msg.data[1]*Math.PI)/180))
-      console.log('PID:', reg);
-      this.canhandler.sendThrusts({
-        frv: Math.max(-1, Math.min(1, reg)),
-        arv: Math.max(-1, Math.min(1, reg)),
-        flv: - Math.max(-1, Math.min(1, reg)),
-        alv: - Math.max(-1, Math.min(1, reg)),
-      })
+      this.io.emit('downstreamConfigs', this.configs)
+      //const reg = this.pid.step(Math.sin((this.configs.sensordata.roll*Math.PI)/180)) * 0.4
+      //this.regThrust = {
+      //  frv: Math.max(-1, Math.min(1, reg)),
+      //  arv: Math.max(-1, Math.min(1, reg)),
+      //  flv: - Math.max(-1, Math.min(1, reg)),
+      //  alv: - Math.max(-1, Math.min(1, reg)),
+      //}
+      //var newthrusts = {frv:null, arv:null, flv:null, alv:null, frh:null, arh:null, flh:null, alh:null}
+      //Object.keys(this.contThrust).map((key) => {newthrusts[key] = this.contThrust[key]})
+      //Object.keys(this.regThrust).map((key) => {newthrusts[key] += this.regThrust[key]})
+      //const m = Math.max(...Object.keys(newthrusts).map((key) => {return newthrusts[key]}))
+      //Object.keys(newthrusts).map((key) => {newthrusts[key] *= (1.0/m)*0.4})
+      //this.canhandler.sendThrusts(newthrusts)
     }
   }
 }
